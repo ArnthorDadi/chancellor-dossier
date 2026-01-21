@@ -1,11 +1,128 @@
-# React + TypeScript + Vite
+# Chancellor Dossier
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+*Gather 'round, political schemers...*
 
-Currently, two official plugins are available:
+Tired of fumbling with those tiny envelopes? Sick of accidentally revealing your secret identity when someone's cat decides the membership cards look delicious? Fear not! **Chancellor Dossier** is here to save your clandestine political machinations.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This digital companion app for **Secret Hitler** replaces those pesky physical envelopes with sleek, digital party cards and membership reveals. No more lost cards, no more bent envelopes, no more "wait, which one was mine again?" Just pure, unadulterated political intrigue at your fingertips.
+
+*Now, shall we begin the vote?*
+
+## Tech Stack
+
+- **React 19** - Modern UI library with React Compiler
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first styling
+- **shadcn/ui** - Component library
+- **Vitest** - Unit testing
+- **Playwright** - End-to-end testing
+
+## Getting Started
+
+### Installation
+
+```bash
+pnpm install
+```
+
+### Development
+
+```bash
+pnpm dev
+```
+
+### Build
+
+```bash
+pnpm build
+```
+
+### Testing
+
+#### Unit Tests (Vitest)
+
+```bash
+# Run all unit tests
+pnpm test
+
+# Run tests in UI mode
+pnpm test:ui
+
+# Run tests with coverage
+pnpm test:coverage
+```
+
+#### E2E Tests (Playwright)
+
+```bash
+# Run all E2E tests
+pnpm test:e2e
+
+# Run E2E tests in UI mode
+pnpm test:e2e:ui
+
+# Run E2E tests in debug mode
+pnpm test:e2e:debug
+
+# Show last test report
+pnpm test:e2e:report
+```
+
+### Linting
+
+```bash
+pnpm lint
+```
+
+## Project Structure
+
+```
+src/
+├── components/       # React components
+│   └── ui/          # shadcn/ui components
+├── lib/             # Utility functions
+├── types/           # TypeScript type declarations
+├── app.tsx          # Main application component
+├── main.tsx         # Application entry point
+└── index.css        # Global styles and Tailwind configuration
+
+tests/
+└── e2e/             # End-to-end tests (Playwright)
+```
+
+## Testing
+
+This project uses two testing frameworks:
+
+### Unit Testing (Vitest + React Testing Library)
+
+Unit tests are located next to the files they test with the `.test.ts` or `.test.tsx` extension.
+
+Features:
+- **Vite-native**: Fast test execution with Vite's transform pipeline
+- **UI Mode**: Interactive test runner with `pnpm test:ui`
+- **Coverage**: Built-in coverage with v8
+- **Watch Mode**: Automatic re-run on file changes
+
+Example test files:
+- `src/lib/utils.test.ts` - Unit tests for utility functions
+- `src/app.test.tsx` - Component tests for the App component
+
+### End-to-End Testing (Playwright)
+
+E2E tests are located in the `tests/e2e/` directory with the `.spec.ts` extension.
+
+Features:
+- **Browser**: Chromium only (configurable in `playwright.config.ts`)
+- **Auto-start dev server**: Tests automatically start the Vite dev server
+- **UI Mode**: Interactive test runner with `pnpm test:e2e:ui`
+- **Debug Mode**: Step-through debugging with `pnpm test:e2e:debug`
+- **Screenshots**: Captured on test failures
+- **Trace Viewer**: Available for failed tests
+
+Example test files:
+- `tests/e2e/app.spec.ts` - E2E tests for the main application
 
 ## React Compiler
 

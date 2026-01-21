@@ -1,0 +1,94 @@
+{
+	"project_name": "Secret Hitler Envelopes",
+	"version": "1.6.0",
+	"project_description": "A responsive companion app to replace physical envelopes in Secret Hitler. Optimized for mobile touch but scales gracefully to tablets and desktops.",
+	"tech_stack": {
+		"frontend": "Vite + React",
+		"realtime": "Firebase Realtime Database",
+		"styling": "Tailwind CSS",
+		"ui_theme": {
+			"style_direction": "1930s Noir / Bureaucratic Minimalist",
+			"primary_colors": {
+				"liberal_blue": "#2b5d84",
+				"fascist_red": "#9c2a2a",
+				"hitler_brown": "#4d342c"
+			},
+			"background": "#f4e4bc",
+			"typography": "Serif / Typewriter (Special Elite or Courier Prime)",
+			"accents": [
+				"#1a1a1a",
+				"#d4c5a1"
+			]
+		}
+	},
+	"constraints": [
+		"Mobile-First: Logic and UI must prioritize small screens.",
+		"Responsive Scaling: On screens > 768px, use a max-width container (e.g., max-w-2xl) to keep the UI centered and professional.",
+		"Touch Targets: Minimum 44x44px for all buttons.",
+		"Zero Horizontal Scrolling: Layout must be 100vw compliant."
+	],
+	"features": [
+		{
+			"id": "F1",
+			"category": "Auth",
+			"description": "Guest Sign-in",
+			"verification_steps": [
+				"User enters username; session persists on refresh."
+			],
+			"passes": false
+		},
+		{
+			"id": "F2",
+			"category": "Networking",
+			"description": "Room Sync",
+			"verification_steps": [
+				"URL params join rooms; real-time player list updates."
+			],
+			"passes": false
+		},
+		{
+			"id": "F3",
+			"category": "Gameplay",
+			"description": "Role Dealing",
+			"verification_steps": [
+				"Correct role counts for 5-10 players.",
+				"Asymmetric info: Fascists see Hitler/each other; Hitler knows no one (7+ players)."
+			],
+			"passes": false
+		},
+		{
+			"id": "F4",
+			"category": "Interaction",
+			"description": "Digital Envelope",
+			"verification_steps": [
+				"'Open' toggle reveals Role and Party cards with high-contrast noir styling."
+			],
+			"passes": false
+		},
+		{
+			"id": "F5",
+			"category": "Presidential Power",
+			"description": "Investigation",
+			"verification_steps": [
+				"Action to 'Investigate' a specific player.",
+				"Displays ONLY Party Membership card (Liberal/Fascist).",
+				"Hitler must return a 'Fascist' result."
+			],
+			"passes": false
+		},
+		{
+			"id": "F6",
+			"category": "UI/UX",
+			"description": "Dark Mode Toggle",
+			"verification_steps": [
+				"Theme toggle button with sun/moon/system icons.",
+				"Switches between light, dark, and system preference modes.",
+				"Theme preference persists across browser sessions.",
+				"Proper ARIA labels and keyboard navigation support.",
+				"Mobile-friendly 44x44px minimum touch target."
+			],
+			"passes": false
+		}
+	],
+	"completion_promise": "ENVELOPES_READY"
+}
