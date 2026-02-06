@@ -1,0 +1,33 @@
+{
+  "rules": {
+    "rooms": {
+      "$roomId": {
+        "metadata": {
+          ".read": true,
+          ".write": "auth != null",
+          ".validate": "newData.hasChildren(['status', 'adminId', 'createdAt']) && newData.child('status').isString() && newData.child('adminId').isString() && newData.child('createdAt').isString()"
+        },
+        "players": {
+          "$playerId": {
+            ".read": true,
+            ".write": "auth != null && ($playerId === auth.uid || data.parent().child('metadata').child('adminId').val() === auth.uid)",
+            ".validate": "newData.hasChildren(['name', 'joinedAt']) && newData.child('name').isString() && newData.child('joinedAt').isString()"
+          }
+        },
+        "roles": {
+          ".read": "auth != null",
+          ".write": "data.parent().child('metadata').child('adminId').val() === auth.uid"
+        },
+        "investigations": {
+          "$targetId": {
+            "$presidentId": {
+              ".read": "auth != null && $presidentId === auth.uid",
+              ".write": "auth != null",
+              ".validate": "newData.hasChildren(['party']) && newData.child('party').isString() && (newData.child('party').val() === 'Liberal' || newData.child('party').val() === 'Fascist')"
+            }
+          }
+        }
+      }
+    }
+  }
+}
