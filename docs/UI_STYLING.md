@@ -146,9 +146,26 @@ src/assets/
 - Maintain component variants while adding period styling
 - Use Tailwind CSS v4 custom properties for theme colors
 
+## Component Template References
+
+For detailed component templates and implementation patterns, see [COMPONENT_DEVELOPMENT.md](./COMPONENT_DEVELOPMENT.md).
+
+### Quick Reference Templates
+- **NoirButton**: Extended shadcn/ui Button with role-specific variants
+- **DigitalEnvelope**: Core envelope component with noir styling and reveal states
+- **RoleCard**: Role reveal cards with period-appropriate styling
+- **BureaucraticForm**: Form components with typewriter aesthetic
+
+### Testing Guidelines for Noir Components
+- Visual regression testing for variant consistency
+- Accessibility testing for color contrast compliance
+- Mobile touch testing for 44x44px minimum targets
+- Dark mode testing for noir theme preservation
+
 ## Implementation Notes
 
 - Use CSS custom properties for theme colors in `src/index.css`
 - Maintain dark mode support with noir-appropriate variants
 - Test touch interactions on actual mobile devices
 - Keep visual hierarchy clear in low-light gaming conditions
+- Follow component templates in [COMPONENT_DEVELOPMENT.md](./COMPONENT_DEVELOPMENT.md) for consistency

@@ -7,7 +7,7 @@ opencode run "Read the docs first in the docs folder in the root of the repo.
  3. Check that the types check via 'pnpm tsc' and tests pass via 'pnpm test'.
  4. Update the prd with the work done.
  5. Append a progress note to @progress.txt for the next run.
- 6. Commit the feature. Before commiting make sure that no tests are failing and that no secret environment variables are committed.
+ 6. When feature is dont add all changed files to git (git add <changed file names>) and suggest an descriptive commit message. A human wil take over and commit it to github.
  ONLY WORK ON A SINGLE FEATURE.
  If, while implementing the feature, your notice the feature is completed, output <promise>COMPLETE</promise>." \
   -f "plans/prd.json" \

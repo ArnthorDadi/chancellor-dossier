@@ -1,302 +1,200 @@
-import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { auth, database } from '@/lib/firebase'
-import { signInAnonymously, signOut, onAuthStateChanged, type User } from 'firebase/auth'
-import { ref, set, update, get } from 'firebase/database'
-import { useRoom } from '@/hooks/useRoom'
-import { dealRoles } from '@/lib/roles'
-import { DigitalEnvelope } from '@/components/DigitalEnvelope'
-import { RoomCreationModal } from '@/components/RoomCreationModal'
-import { generateUniqueRoomCode } from '@/lib/roomCodes'
 
 function App() {
-  const [username, setUsername] = useState<string | null>(null)
-  const [user, setUser] = useState<User | null>(null)
-  const [roomId, setRoomId] = useState<string | null>(null)
-  const [joinRoomInput, setJoinRoomInput] = useState('')
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [isCreateRoomModalOpen, setIsCreateRoomModalOpen] = useState(false)
-  const USERNAME_KEY = 'secret-hitler-username'
-
-  const { room } = useRoom(roomId)
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const roomIdFromUrl = urlParams.get('room')
-    if (roomIdFromUrl) {
-      setRoomId(roomIdFromUrl)
-    }
-  }, [])
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser)
-      if (currentUser) {
-        const storedUsername = localStorage.getItem(USERNAME_KEY)
-        if (storedUsername) {
-          setUsername(storedUsername)
-        }
-      }
-    })
-    return () => unsubscribe()
-  }, [])
-
-  useEffect(() => {
-    if (username && user) {
-      localStorage.setItem(USERNAME_KEY, username)
-    } else {
-      localStorage.removeItem(USERNAME_KEY)
-    }
-  }, [username, user])
-
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const form = e.target as HTMLFormElement;
-    const input = form.elements.namedItem('username') as HTMLInputElement;
-    if (input.value.trim()) {
-      try {
-        await signInAnonymously(auth)
-        setUsername(input.value.trim())
-      } catch (error) {
-        console.error('Sign-in error:', error)
-      }
-    }
-  }
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth)
-      setUsername(null)
-    } catch (error) {
-      console.error('Sign-out error:', error)
-    }
-  }
-
-  const handleJoinRoom = async (roomIdToJoin: string) => {
-    if (!user || !username) {
-      console.error('Cannot join room: missing user or username', { user: !!user, username })
-      return
-    }
-    
-    console.log('Joining room...', { roomId: roomIdToJoin, userId: user.uid, username })
-    
-    try {
-      const playersRef = ref(database, `rooms/${roomIdToJoin}/players/${user.uid}`)
-      await set(playersRef, {
-        name: username,
-        joinedAt: new Date().toISOString()
-      })
-      
-      console.log('Successfully joined room')
-      
-      setRoomId(roomIdToJoin)
-      
-      // Update URL without page reload
-      const url = new URL(window.location.href)
-      url.searchParams.set('room', roomIdToJoin)
-      window.history.pushState({}, '', url.toString())
-    } catch (error) {
-      console.error('Error joining room:', error)
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to join room')
-      setTimeout(() => setErrorMessage(null), 5000)
-    }
-  }
-
-  const checkRoomExists = async (roomCode: string): Promise<boolean> => {
-    const roomRef = ref(database, `rooms/${roomCode}`)
-    const snapshot = await get(roomRef)
-    return snapshot.exists()
-  }
-
-  const handleCreateRoom = async (): Promise<string> => {
-    if (!user || !username) {
-      throw new Error('Missing user or username')
-    }
-    
-    console.log('Creating room...', { userId: user.uid, username })
-    
-    try {
-      // Generate unique human-readable room code
-      const roomCode = await generateUniqueRoomCode(checkRoomExists)
-      console.log('Generated room code:', roomCode)
-      
-      // Initialize room with metadata
-      await set(ref(database, `rooms/${roomCode}/metadata`), {
-        status: 'LOBBY',
-        adminId: user.uid,
-        createdAt: new Date().toISOString()
-      })
-      
-      console.log('Room metadata set')
-      
-      // Add admin as first player
-      await set(ref(database, `rooms/${roomCode}/players/${user.uid}`), {
-        name: username,
-        isAdmin: true,
-        joinedAt: new Date().toISOString()
-      })
-      
-      console.log('Admin player added to room')
-      
-      setRoomId(roomCode)
-      
-      // Update URL
-      const url = new URL(window.location.href)
-      url.searchParams.set('room', roomCode)
-      window.history.pushState({}, '', url.toString())
-      
-      console.log('Room creation completed successfully')
-      return roomCode
-    } catch (error) {
-      console.error('Error creating room:', error)
-      throw error instanceof Error ? error : new Error('Failed to create room')
-    }
-  }
-
-  const handleDealRoles = async () => {
-    if (!room || !user || !username) return
-    
-    const isAdmin = room.metadata?.adminId === user.uid
-    if (!isAdmin) {
-      console.error('Only admin can deal roles')
-      return
-    }
-
-    const playerIds = Object.keys(room.players || {})
-    if (playerIds.length < 5 || playerIds.length > 10) {
-      console.error('Need 5-10 players to deal roles')
-      return
-    }
-
-    try {
-      await dealRoles(roomId!, playerIds)
-      
-      // Update room status to ROLE_REVEAL
-      await update(ref(database, `rooms/${roomId}/metadata`), {
-        status: 'ROLE_REVEAL'
-      })
-    } catch (error) {
-      console.error('Error dealing roles:', error)
-    }
-  }
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
-      <div className="max-w-2xl w-full space-y-6">
-        <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-100 text-center mb-8">
-          Chancellor Dossier
-        </h1>
+    <div className="min-h-screen bg-vintage-cream text-noir-black">
+      {/* Subtle paper texture background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0" 
+             style={{ 
+               backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px)`,
+               backgroundSize: '40px 40px'
+             }}>
+        </div>
+      </div>
 
-        {!username ? (
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
-            <form onSubmit={handleSignIn} className="flex flex-col items-center gap-4">
-              <Input
-                type="text"
-                name="username"
-                placeholder="Enter your username"
-                className="max-w-xs text-center"
-                required
-              />
-              <Button type="submit">Sign In as Guest</Button>
-            </form>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {errorMessage && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
-                {errorMessage}
+      <div className="relative z-10">
+        {/* Header - Inspired by Secret Hitler logo treatment */}
+        <header className="border-b-8 border-noir-black pb-8 bg-white/50 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-6 text-center">
+            <div className="inline-block">
+              <h1 className="font-bold text-4xl md:text-6xl tracking-tight mb-2">
+                SECRET HITLER
+              </h1>
+              <div className="font-bold text-lg md:text-xl tracking-wide text-noir-black/70">
+                DIGITAL ENVELOPES
               </div>
-            )}
-            <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
-              <div className="flex justify-between items-center mb-4">
-                <p className="text-xl text-slate-700 dark:text-slate-300">
-                  Welcome, <span className="font-semibold">{username}</span>!
-                </p>
-                <Button onClick={handleSignOut} variant="outline" size="sm">
-                  Sign Out
-                </Button>
-              </div>
-              
-              {roomId ? (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-200">
-                      Room: {roomId}
-                    </h2>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
-                      {room?.metadata?.status || 'Unknown'}
-                    </div>
-                  </div>
-                  
-                  {room?.players && (
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-slate-700 dark:text-slate-300">Players ({Object.keys(room.players).length}):</h3>
-                      <div className="grid gap-2">
-                        {Object.entries(room.players).map(([playerId, player]) => (
-                          <div key={playerId} className="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-700 rounded">
-                            <span className="text-slate-800 dark:text-slate-200">{player.name}</span>
-                            {player.isAdmin && <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">Admin</span>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Admin Controls */}
-                  {room?.metadata?.adminId === user?.uid && room?.metadata?.status === 'LOBBY' && (
-                    <div className="space-y-3">
-                      <h3 className="font-medium text-slate-700 dark:text-slate-300">Admin Controls</h3>
-                      {Object.keys(room.players || {}).length >= 5 && Object.keys(room.players || {}).length <= 10 ? (
-                        <Button onClick={handleDealRoles} className="w-full">
-                          Deal Roles ({Object.keys(room.players || {}).length} players)
-                        </Button>
-                      ) : (
-                        <div className="text-sm text-slate-600 dark:text-slate-400 text-center p-3 bg-slate-100 dark:bg-slate-700 rounded">
-                          Need 5-10 players to deal roles (currently {Object.keys(room.players || {}).length})
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Role Reveal */}
-                  {room?.metadata?.status === 'ROLE_REVEAL' && room?.roles && (
-                    <DigitalEnvelope roomId={roomId!} />
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      placeholder="Enter room ID to join"
-                      value={joinRoomInput}
-                      onChange={(e) => setJoinRoomInput(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button onClick={() => handleJoinRoom(joinRoomInput)} disabled={!joinRoomInput.trim()}>
-                      Join Room
-                    </Button>
-                  </div>
-                  
-                  <div className="text-center text-slate-600 dark:text-slate-400">or</div>
-                  
-                  <Button onClick={() => setIsCreateRoomModalOpen(true)} className="w-full" variant="secondary">
-                    Create New Room
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
-        )}
-        
-        {/* Room Creation Modal */}
-        <RoomCreationModal
-          isOpen={isCreateRoomModalOpen}
-          onClose={() => setIsCreateRoomModalOpen(false)}
-          onCreateRoom={handleCreateRoom}
-          username={username || ''}
-        />
+        </header>
+
+        {/* Main Hero Section - Board Game Inspired */}
+        <section className="container mx-auto px-4 py-12 max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-8 items-center mb-16">
+            {/* Left - Envelope Focus */}
+            <div className="relative">
+              <div className="border-4 border-noir-black bg-white p-8 shadow-2xl transform rotate-1">
+                <div className="border-2 border-noir-black p-6 bg-vintage-cream">
+                  <div className="text-center mb-6">
+                    <div className="inline-block">
+                      <div className="text-6xl font-bold">📋</div>
+                      <p className="text-sm font-bold mt-2">SECRET IDENTITY</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 bg-liberal-blue border-2 border-noir-black"></div>
+                      <span className="font-courier-prime text-sm">LIBERAL PARTY</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 bg-fascist-red border-2 border-noir-black"></div>
+                      <span className="font-courier-prime text-sm">FASCIST PARTY</span>
+                    </div>
+                  </div>
+                  <div className="mt-6 text-center">
+                    <div className="inline-block border border-noir-black px-3 py-1 bg-yellow-200">
+                      <span className="text-xs font-bold">TOP SECRET</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Tape effect */}
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-20 h-4 bg-fascist-red/80 border border-noir-black"></div>
+              <div className="absolute bottom-0 right-0 transform translate-y-2 translate-x-2 w-16 h-4 bg-liberal-blue/80 border border-noir-black"></div>
+            </div>
+
+            {/* Right - Game Info */}
+            <div className="space-y-6">
+              <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
+                <h2 className="font-bold text-2xl mb-4">ABOUT THE GAME</h2>
+                <div className="space-y-4 text-sm">
+                  <p>
+                    A social deduction game for 5-10 players about finding and stopping the secret Hitler.
+                  </p>
+                  <p>
+                    Players are secretly divided into two teams - liberals and fascists - and must 
+                    figure out who's who before it's too late.
+                  </p>
+                  <p className="font-bold">
+                    This app replaces the physical envelope system with secure digital role cards.
+                  </p>
+                </div>
+              </div>
+
+              {/* Party Icons - Inspired by actual game design */}
+              <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
+                <h3 className="font-bold text-xl mb-4 text-center">PARTY MEMBERSHIP</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 border-2 border-liberal-blue bg-liberal-blue/10">
+                    <div className="text-3xl mb-2">🦅</div>
+                    <div className="w-8 h-8 mx-auto mb-2 bg-liberal-blue border-2 border-noir-black rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">L</span>
+                    </div>
+                    <p className="text-xs font-bold">LIBERAL</p>
+                  </div>
+                  <div className="text-center p-4 border-2 border-fascist-red bg-fascist-red/10">
+                    <div className="text-3xl mb-2">🦎</div>
+                    <div className="w-8 h-8 mx-auto mb-2 bg-fascist-red border-2 border-noir-black rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">F</span>
+                    </div>
+                    <p className="text-xs font-bold">FASCIST</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Features Grid - Board Game Style */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <div className="border-4 border-noir-black bg-white p-6 shadow-2xl transform -rotate-1">
+              <div className="text-center">
+                <div className="text-4xl mb-4">📱</div>
+                <h3 className="font-bold text-lg mb-2">MOBILE FIRST</h3>
+                <p className="text-sm">
+                  Optimized for phones and tablets with touch-friendly controls
+                </p>
+              </div>
+            </div>
+            <div className="border-4 border-noir-black bg-white p-6 shadow-2xl transform rotate-1">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🔒</div>
+                <h3 className="font-bold text-lg mb-2">SECURE</h3>
+                <p className="text-sm">
+                  Private role reveals keep your identity secret until the right moment
+                </p>
+              </div>
+            </div>
+            <div className="border-4 border-noir-black bg-white p-6 shadow-2xl transform rotate-2">
+              <div className="text-center">
+                <div className="text-4xl mb-4">⚡</div>
+                <h3 className="font-bold text-lg mb-2">INSTANT</h3>
+                <p className="text-sm">
+                  Real-time synchronization with all players immediately
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Player Count Info - Simple Block Style */}
+          <div className="border-4 border-noir-black bg-white p-8 shadow-2xl max-w-4xl mx-auto mb-12">
+            <h3 className="font-bold text-2xl mb-6 text-center">PLAYER COUNTS</h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+              <div className="border-2 border-noir-black p-3 bg-vintage-cream">
+                <div className="font-bold">5 Players</div>
+                <div>3 Liberal • 1 Fascist • 1 Hitler</div>
+              </div>
+              <div className="border-2 border-noir-black p-3 bg-vintage-cream">
+                <div className="font-bold">6 Players</div>
+                <div>4 Liberal • 1 Fascist • 1 Hitler</div>
+              </div>
+              <div className="border-2 border-noir-black p-3 bg-vintage-cream">
+                <div className="font-bold">7 Players</div>
+                <div>4 Liberal • 2 Fascist • 1 Hitler</div>
+              </div>
+              <div className="border-2 border-noir-black p-3 bg-vintage-cream">
+                <div className="font-bold">8 Players</div>
+                <div>5 Liberal • 2 Fascist • 1 Hitler</div>
+              </div>
+              <div className="border-2 border-noir-black p-3 bg-vintage-cream">
+                <div className="font-bold">9 Players</div>
+                <div>5 Liberal • 3 Fascist • 1 Hitler</div>
+              </div>
+              <div className="border-2 border-noir-black p-3 bg-vintage-cream">
+                <div className="font-bold">10 Players</div>
+                <div>6 Liberal • 3 Fascist • 1 Hitler</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action - Simple Bold */}
+          <div className="text-center mb-12">
+            <div className="inline-block border-8 border-noir-black bg-white p-8 shadow-2xl transform rotate-1">
+              <h2 className="font-bold text-3xl mb-4">READY TO PLAY?</h2>
+              <p className="text-lg mb-6 text-noir-black/70">
+                Digital envelope system coming soon
+              </p>
+              <Button 
+                size="lg" 
+                disabled
+                className="bg-noir-black text-white font-bold text-lg px-8 py-4 border-4 border-noir-black"
+              >
+                COMING SOON
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer - Simple Game Style */}
+        <footer className="border-t-8 border-noir-black bg-white py-6">
+          <div className="container mx-auto px-4 text-center">
+            <div className="text-sm font-bold mb-2">
+              CHANCELLOR DOSSIER v1.8.0
+            </div>
+            <div className="text-xs text-noir-black/60">
+              Digital envelope system for Secret Hitler board game
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   )

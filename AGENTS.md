@@ -337,6 +337,47 @@ const CustomButton = ({ className, ...props }) => (
 )
 ```
 
+## 1930s Noir Styling System
+
+### Theme Overview
+- **Aesthetic**: 1930s Noir / Bureaucratic Minimalist
+- **Primary Colors**: Liberal Blue (#2b5d84), Fascist Red (#9c2a2a), Hitler Brown (#4d342c)
+- **Background**: Parchment (#f4e4bc) with aged paper textures
+- **Typography**: Special Elite (headers), Courier Prime (body)
+
+### Noir Color Usage Guidelines
+```typescript
+// Role-specific styling
+const roleColors = {
+  liberal: 'bg-liberal-blue text-white border-2 border-noir-black',
+  fascist: 'bg-fascist-red text-white border-2 border-noir-black', 
+  hitler: 'bg-hitler-brown text-white border-2 border-noir-black'
+}
+
+// Envelope styling
+const envelopeStyles = 'border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg'
+```
+
+### Typography Patterns
+```typescript
+// Bureaucratic headers
+<h1 className="font-special-elite text-2xl text-liberal-blue">SECRET DOSSIER</h1>
+
+// Form content
+<p className="font-courier text-sm aged-paper">Top Secret - For Internal Use Only</p>
+```
+
+### Component Noir Variants
+- Extend shadcn/ui components with noir-specific variants
+- Use `cn()` utility for conditional noir styling
+- Maintain accessibility with proper contrast ratios
+
+### Implementation Requirements
+- All components must use noir color palette
+- Typography must use period-appropriate fonts
+- Maintain mobile-first responsive design
+- Preserve dark mode support with noir-appropriate variants
+
 ## Linting and Code Quality
 
 ### ESLint Configuration
@@ -382,9 +423,14 @@ const CustomButton = ({ className, ...props }) => (
 - [ ] All imports organized correctly with @ aliases
 - [ ] TypeScript types are explicit and appropriate
 - [ ] Components follow shadcn/ui and Tailwind patterns
+- [ ] **Noir styling uses correct color palette (liberal-blue, fascist-red, hitler-brown)**
+- [ ] **Typography uses period-appropriate fonts (Special Elite, Courier Prime)**
+- [ ] **Components implement noir variants with proper border styling**
+- [ ] **Mobile touch targets meet 44x44px minimum with noir styling**
+- [ ] **Dark mode variants maintain noir aesthetic**
 - [ ] No ESLint violations
 - [ ] Build completes successfully
 - [ ] Tests pass (unit and E2E when applicable)
 - [ ] Code is self-documenting with clear naming
-- [ ] Tailwind classes are used correctly
+- [ ] Tailwind classes use noir color variables
 - [ ] Components are properly exported
