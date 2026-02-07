@@ -127,7 +127,7 @@
         "Initialize Firebase App and establish connection.",
         "Implement useRoom hook for state subscription."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F8",
