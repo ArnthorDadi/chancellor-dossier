@@ -99,6 +99,51 @@ import App from '@/app'
 - Props interfaces should be prefixed with component name
 - Leverage shadcn/ui patterns and Tailwind CSS classes
 
+### File Naming Conventions
+- **Format**: `<name>-<second>.*` (e.g., `app.tsx`, `button.tsx`, `input.tsx`, `use-auth.ts`, `auth-form.tsx`)
+- **Components**: PascalCase (e.g., `UserProfile.tsx`, `DigitalEnvelope.tsx`)
+- **Hooks**: camelCase (e.g., `useUserData.ts`, `useRoomState.ts`)
+- **Utils**: camelCase (e.g., `apiHelpers.ts`, `validationRules.ts`)
+- **Types**: camelCase (e.g., `userTypes.ts`, `gameTypes.ts`)
+- **Tests**: `<ComponentName>.test.tsx` or `<ComponentName>.test.ts`
+
+```typescript
+// Good naming examples (following <name>-<second>.* format)
+src/
+├── app.tsx                 // Main app component
+├── components/
+│   ├── ui/
+│   │   ├── button.tsx       // UI component
+│   │   ├── input.tsx        // UI component  
+│   │   └── noir-card.tsx    // Custom component
+│   ├── auth-form.tsx        // Feature component
+│   ├── auth-form.test.tsx   // Component test
+│   ├── UserProfile.tsx        // Feature component
+│   └── DigitalEnvelope.tsx   // Custom component
+├── hooks/
+│   ├── use-auth.ts          // Custom hook
+│   ├── use-auth.test.ts      // Hook test
+│   ├── useUserData.ts         // Custom hook
+│   └── useRoomState.ts      // Custom hook
+├── lib/
+│   ├── utils.ts             // Utility functions
+│   ├── firebase-config.ts     // Firebase configuration
+│   └── apiHelpers.ts       // API helpers
+└── types/
+    ├── userTypes.ts          // Type definitions
+    └── gameTypes.ts         // Type definitions
+
+// Test files (following <name>-<second>.* format)
+src/
+├── components/
+│   ├── ui/
+│   │   ├── button.test.tsx   // Component test
+│   │   └── input.test.tsx    // Component test
+│   ├── auth-form.test.tsx   // Component test
+│   ├── UserProfile.test.tsx   // Feature component test
+│   └── DigitalEnvelope.test.tsx
+```
+
 ```typescript
 interface AppProps {
   title: string
@@ -236,13 +281,6 @@ tests/
 
 coverage/               # Test coverage reports
 ```
-
-### File Naming Conventions
-- Components: PascalCase.tsx (e.g., UserProfile.tsx)
-- Hooks: camelCase.ts (e.g., useUserData.ts)
-- Utils: camelCase.ts (e.g., apiHelpers.ts)
-- UI Components: kebab-case.tsx (e.g., button.tsx for shadcn/ui)
-- Test files: *.test.tsx, *.test.ts, *.spec.ts
 
 ### Asset Imports
 ```typescript

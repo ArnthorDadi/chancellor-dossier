@@ -1,8 +1,17 @@
 import { Button } from '@/components/ui/button'
+import { AuthForm } from '@/components/auth-form'
+import { useAuth } from '@/hooks/use-auth'
 
 function App() {
+  const { user } = useAuth()
+
+  // Show authentication form if user is not signed in
+  if (!user) {
+    return <AuthForm />
+  }
+
   return (
-    <div className="min-h-screen bg-vintage-cream text-noir-black">
+    <div className="min-h-screen bg-parchment-bg text-noir-black">
       {/* Subtle paper texture background */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0" 

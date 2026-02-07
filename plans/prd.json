@@ -10,7 +10,7 @@
         "Validate username is not empty",
         "Show loading state during authentication"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F1-FUNC",
@@ -22,7 +22,7 @@
         "Get Firebase user ID token",
         "Handle authentication errors"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F2-UI",
@@ -249,6 +249,49 @@
         "Implement room favorites/bookmarking system",
         "Show room history for rejoining recent rooms",
         "Add notification system when invited friends join"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F12-UI",
+      "category": "ui",
+      "description": "Game Reset Interface",
+      "verification_steps": [
+        "Display 'Reset Game' button in game over state",
+        "Show confirmation dialog before resetting",
+        "Display reset progress indicator during reset",
+        "Show reset history for transparency",
+        "Display different reset options based on user role"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F12-FUNC",
+      "category": "functional",
+      "description": "Game Reset Logic",
+      "verification_steps": [
+        "Validate reset permissions (admin or game over)",
+        "Clear all player roles from /roles/ node",
+        "Reset game state to LOBBY status",
+        "Reset enacted policies to zero",
+        "Clear investigation history",
+        "Maintain player list and room metadata",
+        "Trigger real-time update to all clients",
+        "Record reset action in reset history"
+      ],
+      "passes": false
+    },
+    {
+      "id": "F12-UX",
+      "category": "ux",
+      "description": "Reset User Experience",
+      "verification_steps": [
+        "Provide clear visual feedback for reset action",
+        "Show countdown timer before reset (optional)",
+        "Display reset confirmation with consequences",
+        "Allow admin to cancel reset before completion",
+        "Show immediate UI updates after reset completes",
+        "Return all players to lobby interface smoothly"
       ],
       "passes": false
     }
