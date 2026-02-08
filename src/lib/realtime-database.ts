@@ -207,6 +207,55 @@ export const deleteRoom = async (roomId: string): Promise<void> => {
 }
 
 /**
+ * Initialize database schema for a new room
+ */
+export const initializeRoomSchema = async (
+  roomId: string,
+  adminId: string,
+  roomName?: string
+): Promise<void> => {
+  const roomSchema = {
+    metadata: {
+      status: 'LOBBY',
+      adminId,
+      createdAt: new Date().toISOString(),
+      roomName: roomName || `Room ${roomId}`,
+      enactedLiberalPolicies: 0,
+      enactedFascistPolicies: 0,
+      electionTracker: 0,
+      startingPlayerId: null
+    },
+    players: {},
+    roles: {},
+    investigations: {}
+  }
+
+  await createRoom(roomId, roomSchema)
+}
+
+/**
+ * Validate that database schema is properly initialized
+ */
+export const validateRoomSchema = async (roomId: string): Promise<boolean> => {
+  const room = await getRoom(roomId)
+  if (!room) return false
+
+  const { metadata, players, roles, investigations } = room
+  
+  // Check required metadata fields
+  const requiredMetadataFields = ['status', 'adminId', 'createdAt', 'roomName']
+  const hasValidMetadata = metadata && requiredMetadataFields.every(field => 
+    metadata[field] !== undefined && metadata[field] !== null
+  )
+
+  // Check that all required sections exist
+  return hasValidMetadata && 
+         typeof players === 'object' && 
+         typeof roles === 'object' && 
+         typeof investigations === 'object'
+}
+
+/**
  * Reset room for new game
  */
 export const resetRoom = async (roomId: string): Promise<void> => {

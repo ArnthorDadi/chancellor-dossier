@@ -137,7 +137,7 @@
         "Initialize the following paths: /rooms/{id}/metadata (status, adminId), /rooms/{id}/players (name, avatar), /rooms/{id}/roles (secret data), /rooms/{id}/investigations.",
         "Deploy security rules to protect the /roles/ node."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F9-UI",

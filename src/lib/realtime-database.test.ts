@@ -9,7 +9,9 @@ import {
   getRoom,
   addPlayerToRoom,
   removePlayer,
-  updateRoomMetadata
+  updateRoomMetadata,
+  initializeRoomSchema,
+  validateRoomSchema
 } from '@/lib/realtime-database'
 
 // Mock Firebase
@@ -187,6 +189,130 @@ describe('Realtime Database', () => {
         { ref: 'rooms/TEST1/metadata' },
         metadata
       )
+    })
+  })
+
+  describe('initializeRoomSchema', () => {
+    it('should initialize room with default schema', async () => {
+      const { set } = await import('firebase/database')
+      const adminId = 'admin123'
+      
+      await initializeRoomSchema('TEST1', adminId)
+      
+      expect(set).toHaveBeenCalledWith(
+        { ref: 'rooms/TEST1' },
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            status: 'LOBBY',
+            adminId,
+            createdAt: expect.any(String),
+            roomName: 'Room TEST1',
+            enactedLiberalPolicies: 0,
+            enactedFascistPolicies: 0,
+            electionTracker: 0,
+            startingPlayerId: null
+          }),
+          players: {},
+          roles: {},
+          investigations: {}
+        })
+      )
+    })
+
+    it('should initialize room with custom name', async () => {
+      const { set } = await import('firebase/database')
+      const adminId = 'admin123'
+      const roomName = 'Custom Room Name'
+      
+      await initializeRoomSchema('TEST1', adminId, roomName)
+      
+      expect(set).toHaveBeenCalledWith(
+        { ref: 'rooms/TEST1' },
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            roomName
+          })
+        })
+      )
+    })
+  })
+
+  describe('validateRoomSchema', () => {
+    it('should return true for valid room schema', async () => {
+      const { get } = await import('firebase/database')
+      const mockRoom = {
+        metadata: {
+          status: 'LOBBY',
+          adminId: 'admin123',
+          createdAt: '2023-01-01T00:00:00.000Z',
+          roomName: 'Test Room'
+        },
+        players: {},
+        roles: {},
+        investigations: {}
+      }
+      vi.mocked(get).mockResolvedValue({
+        exists: () => true,
+        val: () => mockRoom
+      } as any)
+      
+      const result = await validateRoomSchema('TEST1')
+      
+      expect(result).toBe(true)
+    })
+
+    it('should return false for non-existent room', async () => {
+      const { get } = await import('firebase/database')
+      vi.mocked(get).mockResolvedValue({
+        exists: () => false
+      } as any)
+      
+      const result = await validateRoomSchema('TEST1')
+      
+      expect(result).toBe(false)
+    })
+
+    it('should return false for invalid metadata', async () => {
+      const { get } = await import('firebase/database')
+      const mockRoom = {
+        metadata: {
+          status: 'LOBBY',
+          adminId: 'admin123'
+          // Missing createdAt and roomName
+        },
+        players: {},
+        roles: {},
+        investigations: {}
+      }
+      vi.mocked(get).mockResolvedValue({
+        exists: () => true,
+        val: () => mockRoom
+      } as any)
+      
+      const result = await validateRoomSchema('TEST1')
+      
+      expect(result).toBe(false)
+    })
+
+    it('should return false if required sections are missing', async () => {
+      const { get } = await import('firebase/database')
+      const mockRoom = {
+        metadata: {
+          status: 'LOBBY',
+          adminId: 'admin123',
+          createdAt: '2023-01-01T00:00:00.000Z',
+          roomName: 'Test Room'
+        }
+        // Missing players, roles, investigations
+      }
+      vi.mocked(get).mockResolvedValue({
+        exists: () => true,
+        val: () => mockRoom
+      } as any)
+      
+      const result = await validateRoomSchema('TEST1')
+      
+      expect(result).toBe(false)
     })
   })
 })
