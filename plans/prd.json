@@ -57,7 +57,7 @@
         "Roles are shuffled and written to the protected /roles/ node by the Admin.",
         "Asymmetric info enforced: Fascists see each other; Hitler visibility depends on player count."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F4",

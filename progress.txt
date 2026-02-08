@@ -42,3 +42,16 @@
 - Added comprehensive unit tests (16 tests) covering all UI states and interactions
 - All tests passing (62 tests total), TypeScript compilation and build successful
 - Updated PRD to mark both F2-UI and F2-FUNC as completed
+
+2026-02-08: Completed Role Dealing (F3)
+- Role dealing functionality already implemented in useRoom startGame method and game-logic.ts
+- assignRoles function correctly handles Secret Hitler role distribution for 5-10 players
+- Implements Fisher-Yates shuffle algorithm for random role assignment
+- Asymmetric information enforcement via getVisibleInformation function
+  - Fascists see each other and Hitler in all player counts
+  - Hitler sees Fascists only in < 7 player games
+  - Liberals only see themselves
+- Added comprehensive unit tests (24 tests) covering all role distribution scenarios
+- Tests verify correct role counts for all player sizes (5-10), validation, asymmetric knowledge rules
+- All tests passing (86 tests total), TypeScript compilation successful
+- Updated PRD to mark F3 as completed
