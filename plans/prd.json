@@ -34,7 +34,7 @@
         "Update list in real-time when players join/leave",
         "Show 'Ready' status when appropriate"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F2-FUNC",
@@ -46,7 +46,7 @@
         "Handle player disconnects/cleanup",
         "Maintain player order consistency"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F3",
