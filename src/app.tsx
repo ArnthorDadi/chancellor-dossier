@@ -1,13 +1,71 @@
 import { Button } from '@/components/ui/button'
 import { AuthForm } from '@/components/auth-form'
+import { DigitalEnvelope } from '@/components/digital-envelope'
 import { useAuth } from '@/hooks/use-auth'
+import { useGameState } from '@/hooks/use-game-state'
 
 function App() {
   const { user } = useAuth()
+  
+  // Get game state - for now we'll use a mock room ID
+  // In a real implementation, this would come from URL params or routing
+  const gameState = useGameState() // No room ID for now, will be implemented with routing
 
   // Show authentication form if user is not signed in
   if (!user) {
     return <AuthForm />
+  }
+
+  // Show Digital Envelope during role reveal phase
+  if (gameState.gameStatus === 'ROLE_REVEAL' && gameState.currentPlayerRole && gameState.currentPlayerParty) {
+    return (
+      <div className="min-h-screen bg-parchment-bg text-noir-black">
+        {/* Paper texture background */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0" 
+               style={{ 
+                 backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px)`,
+                 backgroundSize: '40px 40px'
+               }}>
+          </div>
+        </div>
+
+        <div className="relative z-10 min-h-screen flex flex-col">
+          {/* Header */}
+          <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
+            <div className="container mx-auto px-4 py-4 text-center">
+              <div className="inline-block">
+                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                  SECRET HITLER
+                </h1>
+                <div className="font-bold text-sm md:text-base tracking-wide text-noir-black/70">
+                  DIGITAL ENVELOPES
+                </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
+            <div className="w-full max-w-lg">
+              <div className="text-center mb-6">
+                <h2 className="font-special-elite text-xl text-liberal-blue mb-2">
+                  {gameState.currentPhase}
+                </h2>
+                <p className="font-courier text-sm text-noir-black/60">
+                  Your secret identity is enclosed below
+                </p>
+              </div>
+              
+              <DigitalEnvelope 
+                role={gameState.currentPlayerRole}
+                party={gameState.currentPlayerParty}
+              />
+            </div>
+          </main>
+        </div>
+      </div>
+    )
   }
 
   return (

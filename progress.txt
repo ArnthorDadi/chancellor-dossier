@@ -55,3 +55,17 @@
 - Tests verify correct role counts for all player sizes (5-10), validation, asymmetric knowledge rules
 - All tests passing (86 tests total), TypeScript compilation successful
 - Updated PRD to mark F3 as completed
+
+2026-02-08: Completed Digital Envelope (F4)
+- Created DigitalEnvelope component with 1930s noir styling and toggle functionality
+- Component displays sealed envelope with 'TOP SECRET' and wax seal design when closed
+- 'Open' toggle reveals Role and Party cards with high-contrast noir styling
+  - Role cards: Liberal (blue), Fascist (red), Hitler (brown) with period-appropriate symbols
+  - Party cards display Liberal Party or Fascist Party membership
+- Integrated into app.tsx to show when game_status is 'ROLE_REVEAL'
+- Supports both controlled and uncontrolled toggle states
+- Handles missing role/party data with graceful fallback UI
+- Added comprehensive unit tests (20 tests) covering all states, variants, and interactions
+- Tests verify toggle behavior, role display, party cards, accessibility, and responsive design
+- All tests passing (106 tests total), TypeScript compilation and build successful
+- Updated PRD to mark F4 as completed

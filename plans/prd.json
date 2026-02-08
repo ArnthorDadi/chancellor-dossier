@@ -67,7 +67,7 @@
         "Component displays when game_status is 'ROLE_REVEAL'.",
         "'Open' toggle reveals Role and Party cards with high-contrast noir styling."
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F5-UI",
