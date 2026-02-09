@@ -13,8 +13,7 @@ export function AuthForm() {
       return
     }
     
-    await signIn()
-    // In a real implementation, we would save the username to the user's profile
+    await signIn(username.trim())
   }
 
   if (loading) {

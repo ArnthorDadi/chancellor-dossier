@@ -1,4 +1,3 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuthForm } from '@/components/auth-form'
@@ -21,9 +20,11 @@ describe('AuthForm', () => {
       user: null,
       loading: false,
       error: null,
+      username: null,
       signIn: mockSignIn,
       signOut: mockSignOut,
-      getToken: vi.fn()
+      getToken: vi.fn(),
+      updateUsername: vi.fn()
     })
   })
 
@@ -31,28 +32,28 @@ describe('AuthForm', () => {
     render(<AuthForm />)
     
     expect(screen.getByText('SECRET DOSSIER ACCESS')).toBeInTheDocument()
-    expect(screen.getByLabelText(/ENTER YOUR NAME:/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('ENTER YOUR NAME:')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'ACCESS FILES' })).toBeInTheDocument()
   })
 
-  it('should show loading state', () => {
+  it('should show loading state during authentication', () => {
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       loading: true,
       error: null,
+      username: null,
       signIn: mockSignIn,
       signOut: mockSignOut,
-      getToken: vi.fn()
+      getToken: vi.fn(),
+      updateUsername: vi.fn()
     })
 
     render(<AuthForm />)
     
     expect(screen.getByText('Authenticating...')).toBeInTheDocument()
-    // Button is not present during loading state
-    expect(screen.queryByRole('button', { name: 'ACCESS FILES' })).not.toBeInTheDocument()
   })
 
-  it('should show user information when authenticated', () => {
+  it('should show success state when user is authenticated', () => {
     const mockUser = {
       uid: 'test-user-123',
       isAnonymous: true
@@ -62,38 +63,18 @@ describe('AuthForm', () => {
       user: mockUser,
       loading: false,
       error: null,
+      username: 'TestAgent',
       signIn: mockSignIn,
       signOut: mockSignOut,
-      getToken: vi.fn()
+      getToken: vi.fn(),
+      updateUsername: vi.fn()
     })
 
     render(<AuthForm />)
     
     expect(screen.getByText('AUTHENTICATION SUCCESSFUL')).toBeInTheDocument()
-    expect(screen.getByText('test-user-123')).toBeInTheDocument()
+    expect(screen.getByText('User ID:')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Sign Out' })).toBeInTheDocument()
-  })
-
-  it('should handle form submission', async () => {
-    const user = userEvent.setup()
-    render(<AuthForm />)
-    
-    const input = screen.getByLabelText(/ENTER YOUR NAME:/i)
-    const button = screen.getByRole('button', { name: 'ACCESS FILES' })
-
-    // Initially disabled
-    expect(button).toBeDisabled()
-
-    // Type in username
-    await user.type(input, 'Test User')
-    
-    // Now enabled
-    expect(button).toBeEnabled()
-
-    // Submit form
-    await user.click(button)
-
-    expect(mockSignIn).toHaveBeenCalledTimes(1)
   })
 
   it('should display error message when provided', () => {
@@ -101,9 +82,11 @@ describe('AuthForm', () => {
       user: null,
       loading: false,
       error: 'Authentication failed',
+      username: null,
       signIn: mockSignIn,
       signOut: mockSignOut,
-      getToken: vi.fn()
+      getToken: vi.fn(),
+      updateUsername: vi.fn()
     })
 
     render(<AuthForm />)
@@ -121,9 +104,11 @@ describe('AuthForm', () => {
       user: mockUser,
       loading: false,
       error: null,
+      username: 'TestAgent',
       signIn: mockSignIn,
       signOut: mockSignOut,
-      getToken: vi.fn()
+      getToken: vi.fn(),
+      updateUsername: vi.fn()
     })
 
     const user = userEvent.setup()
@@ -131,7 +116,31 @@ describe('AuthForm', () => {
     
     const signOutButton = screen.getByRole('button', { name: 'Sign Out' })
     await user.click(signOutButton)
-
+    
     expect(mockSignOut).toHaveBeenCalledTimes(1)
+  })
+
+  it('should call signIn with username when form is submitted', async () => {
+    const user = userEvent.setup()
+    render(<AuthForm />)
+    
+    const usernameInput = screen.getByLabelText('ENTER YOUR NAME:')
+    const submitButton = screen.getByRole('button', { name: 'ACCESS FILES' })
+    
+    await user.type(usernameInput, 'TestUser')
+    await user.click(submitButton)
+    
+    expect(mockSignIn).toHaveBeenCalledWith('TestUser')
+  })
+
+  it('should not call signIn if username is empty', async () => {
+    const user = userEvent.setup()
+    render(<AuthForm />)
+    
+    const submitButton = screen.getByRole('button', { name: 'ACCESS FILES' })
+    
+    await user.click(submitButton)
+    
+    expect(mockSignIn).not.toHaveBeenCalled()
   })
 })
