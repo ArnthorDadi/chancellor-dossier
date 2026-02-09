@@ -241,14 +241,14 @@ export function LandingPage() {
                    )}
                  </Button>
 ) : (
-                  <Link to="/login" state={{ from: { pathname: "/join-room" } }}>
-                    <Button
-                      size="lg"
-                      className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black transition-colors"
-                    >
-                      CREATE A ROOM
-                    </Button>
-                  </Link>
+<Link to="/login" state={{ from: { pathname: "/login" }, intent: "create-room" }}>
+                     <Button
+                       size="lg"
+                       className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black transition-colors"
+                     >
+                       CREATE A ROOM
+                     </Button>
+                   </Link>
                 )}
                     </div>
 
