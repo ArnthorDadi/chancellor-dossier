@@ -151,7 +151,7 @@
         "Display 'Creating room...' message",
         "Show success confirmation with room ID and sharing options"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F9-FUNC",
@@ -167,7 +167,7 @@
         "Add creator to /rooms/{roomId}/players",
         "Redirect to room lobby URL"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F10-UI",

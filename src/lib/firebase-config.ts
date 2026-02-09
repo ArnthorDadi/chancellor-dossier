@@ -10,7 +10,6 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "missing messagingSenderId",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "missing appId"
 }
-console.log('test', {firebaseConfig});
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
