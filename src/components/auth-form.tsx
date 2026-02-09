@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 export function AuthForm() {
-  const { user, loading, error, signIn, signOut } = useAuth()
+  const { user, loading, error, signIn, signOutWithCleanup } = useAuth()
   const [username, setUsername] = useState<string>('')
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +41,7 @@ export function AuthForm() {
               <p className="font-courier text-sm mt-2">Status: Anonymous User</p>
             </div>
             <Button 
-              onClick={signOut}
+              onClick={signOutWithCleanup}
               className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black"
             >
               Sign Out

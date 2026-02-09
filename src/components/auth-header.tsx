@@ -8,7 +8,7 @@ interface AuthHeaderProps {
 }
 
 export function AuthHeader({ className }: AuthHeaderProps) {
-  const { user, loading, username, signOut } = useAuth()
+  const { user, loading, username, signOutWithCleanup } = useAuth()
   const navigate = useNavigate()
   const [isSigningOut, setIsSigningOut] = useState(false)
 
@@ -19,7 +19,7 @@ export function AuthHeader({ className }: AuthHeaderProps) {
   const handleSignOut = async () => {
     setIsSigningOut(true)
     try {
-      await signOut()
+      await signOutWithCleanup()
     } catch (error) {
       console.error('Sign out failed:', error)
     } finally {

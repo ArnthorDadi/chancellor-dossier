@@ -19,6 +19,19 @@ vi.mock('react-router-dom', async () => {
 const mockUseAuth = vi.mocked(useAuth)
 const mockUseCreateRoom = vi.mocked(useCreateRoom)
 
+const createMockAuth = (overrides = {}) => ({
+  user: null,
+  loading: false,
+  error: null,
+  username: null,
+  signIn: vi.fn(),
+  signOut: vi.fn(),
+  signOutWithCleanup: vi.fn(),
+  getToken: vi.fn(),
+  updateUsername: vi.fn(),
+  ...overrides
+})
+
 describe('Create Room Feature', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -145,12 +158,13 @@ describe('Create Room Feature', () => {
 
     it('shows login prompt instead of create button when not authenticated', () => {
       mockUseAuth.mockReturnValue({
-        user: null,
+        user: { uid: '123', isAnonymous: true },
         loading: false,
         error: null,
-        username: null,
+        username: 'Test User',
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn()
       })

@@ -48,7 +48,7 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
     )
   }
 
-  const players = Object.values(room.players)
+  const players = Object.values(room.players || {})
   const playerCount = players.length
   const isAdmin = user?.uid === room.metadata.adminId
 

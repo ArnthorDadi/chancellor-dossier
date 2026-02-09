@@ -53,7 +53,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
   const [error, setError] = useState<string | null>(null)
   const [subscriptions, setSubscriptions] = useState<(() => void)[]>([])
 
-  const isPlayerInRoom = user && room ? user.uid in room.players : false
+  const isPlayerInRoom = user && room && room.players ? user.uid in room.players : false
 
   // Subscribe to room updates
   const subscribeToRoomUpdates = useCallback((targetRoomId: string) => {
@@ -105,6 +105,10 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
       }
 
       await createRoom(newRoomId, newRoom)
+      
+      // Store current room ID for logout cleanup
+      localStorage.setItem(`currentRoom_${user.uid}`, newRoomId)
+      
       subscribeToRoomUpdates(newRoomId)
       
       return newRoomId
@@ -138,7 +142,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         throw new Error('Cannot join a game in progress')
       }
 
-      const playerCount = Object.keys(existingRoom.players).length
+      const playerCount = Object.keys(existingRoom.players || {}).length
       if (playerCount >= 10) {
         throw new Error('Room is full')
       }
@@ -151,6 +155,9 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         isReady: false,
         joinedAt: now
       })
+
+      // Store current room ID for logout cleanup
+      localStorage.setItem(`currentRoom_${user.uid}`, targetRoomId)
 
       subscribeToRoomUpdates(targetRoomId)
     } catch (err) {
@@ -171,7 +178,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
 
       // If admin leaves and there are other players, transfer admin
       if (room.metadata.adminId === user.uid) {
-        const remainingPlayers = Object.entries(room.players)
+        const remainingPlayers = Object.entries(room.players || {})
           .filter(([id]) => id !== user.uid)
         
         if (remainingPlayers.length > 0) {
@@ -182,6 +189,9 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
           await deleteRoom(room.id)
         }
       }
+
+      // Clear current room ID from localStorage
+      localStorage.removeItem(`currentRoom_${user.uid}`)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to leave room'
       setError(errorMessage)
@@ -199,7 +209,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
       throw new Error('Only admin can start the game')
     }
 
-    const players = Object.values(room.players)
+    const players = Object.values(room.players || {})
     const canStart = canStartGame(players.length)
     
     if (!canStart.canStart) {

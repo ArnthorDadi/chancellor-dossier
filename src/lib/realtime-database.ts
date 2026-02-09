@@ -274,7 +274,7 @@ export const resetRoom = async (roomId: string): Promise<void> => {
 
   // Reset player game states
   const players = await getRoomPlayers(roomId)
-  Object.keys(players).forEach(playerId => {
+  Object.keys(players || {}).forEach(playerId => {
     updates[dbPaths.player(roomId, playerId)] = {
       ...players[playerId],
       isReady: false

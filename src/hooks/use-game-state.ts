@@ -75,7 +75,7 @@ export const useGameState = (roomId?: string): UseGameStateReturn => {
       return
     }
 
-    const players = Object.values(room.players)
+    const players = Object.values(room.players || {})
     const gamePlayers = players.map(player => ({
       ...player,
       role: room.roles?.[player.id],
