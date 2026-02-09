@@ -7,6 +7,7 @@ This file contains guidelines and commands for agentic coding agents working in 
 React + TypeScript + Vite application with React Compiler enabled, using Tailwind CSS and shadcn/ui components. This project uses strict TypeScript configuration, ESLint for code quality enforcement, and comprehensive testing setup with Vitest and Playwright.
 
 ### Technology Stack
+
 - React 19.2.0 with TypeScript
 - Vite 7.2.4 as build tool
 - React Compiler (babel-plugin-react-compiler) enabled
@@ -20,6 +21,7 @@ React + TypeScript + Vite application with React Compiler enabled, using Tailwin
 ## Game Rules Reference
 
 ### Game Logic (The Math)
+
 - 5 players: 3 Liberal, 1 Fascist, 1 Hitler
 - 6 players: 4 Liberal, 1 Fascist, 1 Hitler
 - 7 players: 4 Liberal, 2 Fascist, 1 Hitler
@@ -28,10 +30,12 @@ React + TypeScript + Vite application with React Compiler enabled, using Tailwin
 - 10 players: 6 Liberal, 3 Fascist, 1 Hitler
 
 ### Knowledge Rules
+
 - Less than 7 Players: Hitler knows who the Fascist(s) are.
 - More or equal to 7 Players: Hitler is blind to Fascist identity. Fascists know Hitler and each other.
 
 ### Security & Privacy Implementation
+
 - NEVER expose 'role' property in Investigation power UI
 - Investigation power ONLY reveals 'party' (Liberal or Fascist)
 - Hitler's 'party' is ALWAYS Fascist (never Liberal)
@@ -39,6 +43,7 @@ React + TypeScript + Vite application with React Compiler enabled, using Tailwin
 ## Development Commands
 
 ### Core Commands
+
 ```bash
 npm run dev              # Start development server with HMR
 npm run build            # TypeScript compilation + Vite build
@@ -47,6 +52,7 @@ npm run preview          # Preview production build locally
 ```
 
 ### Testing Commands
+
 ```bash
 npm run test             # Run unit tests with Vitest
 npm run test:ui          # Run tests with Vitest UI
@@ -58,12 +64,14 @@ npm run test:e2e:report  # Show Playwright test report
 ```
 
 ### TypeScript Compilation
+
 ```bash
 tsc -b                   # Build TypeScript (used in npm run build)
 tsc -b --watch           # Watch TypeScript compilation
 ```
 
 ### Development Workflow
+
 1. Always run `npm run lint` before committing changes
 2. Use `npm run dev` for development with hot module replacement
 3. Run `npm run build` to verify production build works
@@ -81,18 +89,20 @@ tsc -b --watch           # Watch TypeScript compilation
 ## Code Style Guidelines
 
 ### Import Organization
+
 ```typescript
 // External libraries first
-import { useState, useEffect } from 'react'
-import { createRoot } from 'react-dom/client'
+import { useState, useEffect } from "react";
+import { createRoot } from "react-dom/client";
 
 // Internal modules second (using @ alias)
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import App from '@/app'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import App from "@/app";
 ```
 
 ### Component Conventions
+
 - Use functional components with hooks
 - Export default for main components
 - Use PascalCase for component names
@@ -100,6 +110,7 @@ import App from '@/app'
 - Leverage shadcn/ui patterns and Tailwind CSS classes
 
 ### File Naming Conventions
+
 - **Format**: `<name>-<second>.*` (e.g., `app.tsx`, `button.tsx`, `input.tsx`, `use-auth.ts`, `auth-form.tsx`)
 - **Components**: PascalCase (e.g., `UserProfile.tsx`, `DigitalEnvelope.tsx`)
 - **Hooks**: camelCase (e.g., `useUserData.ts`, `useRoomState.ts`)
@@ -114,7 +125,7 @@ src/
 ├── components/
 │   ├── ui/
 │   │   ├── button.tsx       // UI component
-│   │   ├── input.tsx        // UI component  
+│   │   ├── input.tsx        // UI component
 │   │   └── noir-card.tsx    // Custom component
 │   ├── auth-form.tsx        // Feature component
 │   ├── auth-form.test.tsx   // Component test
@@ -161,6 +172,7 @@ export default App
 ```
 
 ### TypeScript Patterns
+
 - Use strict mode (already configured)
 - Prefer `interface` for object shapes, `type` for unions/generics
 - Use explicit return types for functions
@@ -170,13 +182,13 @@ export default App
 ```typescript
 // Good
 interface User {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 const fetchUser = async (id: number): Promise<User> => {
   // implementation
-}
+};
 
 // Avoid unused parameters and locals (enforced by tsconfig)
 ```
@@ -184,22 +196,25 @@ const fetchUser = async (id: number): Promise<User> => {
 ## React-Specific Conventions
 
 ### React Compiler Considerations
+
 - React Compiler is enabled via babel-plugin-react-compiler
 - Write components as if they could be optimized automatically
 - Avoid manual optimizations that might interfere with compiler
 
 ### Hooks Usage
+
 ```typescript
 // Standard hooks pattern
-const [count, setCount] = useState(0)
-const [data, setData] = useState<Data | null>(null)
+const [count, setCount] = useState(0);
+const [data, setData] = useState<Data | null>(null);
 
 useEffect(() => {
   // Effect logic
-}, [dependency])
+}, [dependency]);
 ```
 
 ### JSX Patterns with Tailwind CSS
+
 - Use Tailwind CSS classes for styling
 - Leverage shadcn/ui components for consistent UI
 - Use self-closing tags for empty elements
@@ -215,6 +230,7 @@ return (
 ```
 
 ### Component Library Usage
+
 - Use shadcn/ui components from `@/components/ui`
 - Follow shadcn/ui patterns for variants and styling
 - Use `cn()` utility for conditional class merging
@@ -232,30 +248,33 @@ const CustomButton = ({ variant, className, ...props }) => (
 ## TypeScript Best Practices
 
 ### Strict Mode Requirements
+
 - All variables must be explicitly typed or inferred
 - No unused locals or parameters (enforced)
 - No implicit any types
 - Strict null checking enabled
 
 ### Type Definitions
+
 ```typescript
 // Interface for object shapes
 interface ApiResponse {
-  data: string[]
-  status: number
+  data: string[];
+  status: number;
 }
 
 // Type for unions/generics
-type LoadingState = 'idle' | 'loading' | 'success' | 'error'
+type LoadingState = "idle" | "loading" | "success" | "error";
 
 type Result<T> = {
-  success: boolean
-  data?: T
-  error?: string
-}
+  success: boolean;
+  data?: T;
+  error?: string;
+};
 ```
 
 ### Path Aliases
+
 - Use `@/*` aliases configured in tsconfig.json and vite.config.ts
 - `@/components` for React components
 - `@/lib` for utility functions
@@ -265,6 +284,7 @@ type Result<T> = {
 ## File Organization
 
 ### Directory Structure
+
 ```
 src/
 ├── components/         # Reusable UI components
@@ -283,18 +303,20 @@ coverage/               # Test coverage reports
 ```
 
 ### Asset Imports
+
 ```typescript
 // CSS and Tailwind
-import '@/index.css'
+import "@/index.css";
 
 // Components with aliases
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 ```
 
 ## Testing Guidelines
 
 ### Unit Testing (Vitest + React Testing Library)
+
 - Test files: `*.test.tsx` or `*.test.ts`
 - Use React Testing Library for component testing
 - Use jsdom environment for DOM testing
@@ -314,21 +336,23 @@ describe('Button', () => {
 ```
 
 ### End-to-End Testing (Playwright)
+
 - Test files: `tests/e2e/*.spec.ts`
 - Test full user workflows and application behavior
 - Use Playwright test runner with browser automation
 - Configure in playwright.config.ts
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test('home page loads correctly', async ({ page }) => {
-  await page.goto('/')
-  await expect(page.getByText('Chancellor Dossier')).toBeVisible()
-})
+test("home page loads correctly", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("Chancellor Dossier")).toBeVisible();
+});
 ```
 
 ### Test Commands
+
 ```bash
 npm run test                # Run all unit tests
 npm run test:ui            # Run tests with UI interface
@@ -344,6 +368,7 @@ For comprehensive UI styling guidelines, theme implementation, and component pat
 ## Styling Guidelines
 
 ### Tailwind CSS Usage
+
 - Use Tailwind CSS classes for all styling
 - Leverage Tailwind's responsive design prefixes
 - Use dark mode variants where appropriate
@@ -361,6 +386,7 @@ For comprehensive UI styling guidelines, theme implementation, and component pat
 ```
 
 ### shadcn/ui Component Patterns
+
 - Use shadcn/ui components as building blocks
 - Follow shadcn/ui variant patterns
 - Use `cn()` utility for conditional styling
@@ -378,25 +404,29 @@ const CustomButton = ({ className, ...props }) => (
 ## 1930s Noir Styling System
 
 ### Theme Overview
+
 - **Aesthetic**: 1930s Noir / Bureaucratic Minimalist
 - **Primary Colors**: Liberal Blue (#2b5d84), Fascist Red (#9c2a2a), Hitler Brown (#4d342c)
 - **Background**: Parchment (#f4e4bc) with aged paper textures
 - **Typography**: Special Elite (headers), Courier Prime (body)
 
 ### Noir Color Usage Guidelines
+
 ```typescript
 // Role-specific styling
 const roleColors = {
-  liberal: 'bg-liberal-blue text-white border-2 border-noir-black',
-  fascist: 'bg-fascist-red text-white border-2 border-noir-black', 
-  hitler: 'bg-hitler-brown text-white border-2 border-noir-black'
-}
+  liberal: "bg-liberal-blue text-white border-2 border-noir-black",
+  fascist: "bg-fascist-red text-white border-2 border-noir-black",
+  hitler: "bg-hitler-brown text-white border-2 border-noir-black",
+};
 
 // Envelope styling
-const envelopeStyles = 'border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg'
+const envelopeStyles =
+  "border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg";
 ```
 
 ### Typography Patterns
+
 ```typescript
 // Bureaucratic headers
 <h1 className="font-special-elite text-2xl text-liberal-blue">SECRET DOSSIER</h1>
@@ -406,11 +436,13 @@ const envelopeStyles = 'border-2 border-liberal-blue bg-parchment rounded-lg sha
 ```
 
 ### Component Noir Variants
+
 - Extend shadcn/ui components with noir-specific variants
 - Use `cn()` utility for conditional noir styling
 - Maintain accessibility with proper contrast ratios
 
 ### Implementation Requirements
+
 - All components must use noir color palette
 - Typography must use period-appropriate fonts
 - Maintain mobile-first responsive design
@@ -419,18 +451,21 @@ const envelopeStyles = 'border-2 border-liberal-blue bg-parchment rounded-lg sha
 ## Linting and Code Quality
 
 ### ESLint Configuration
+
 - TypeScript ESLint rules enabled
 - React Hooks rules enforced
 - React Refresh for Vite compatibility
 - Global ignores: dist/, coverage/, node_modules/
 
 ### Before Committing
+
 1. Run `npm run lint` to check for ESLint violations
 2. Run `npm run build` to verify TypeScript compilation
 3. Run `npm run test` to ensure tests pass
 4. Test in development mode with `npm run dev`
 
 ### Common Issues to Avoid
+
 - Unused variables (enforced by TypeScript)
 - Missing dependencies in useEffect arrays
 - Implicit any types
@@ -440,24 +475,28 @@ const envelopeStyles = 'border-2 border-liberal-blue bg-parchment rounded-lg sha
 ## Development Tips
 
 ### Performance Considerations
+
 - React Compiler will optimize components automatically
 - Focus on clean, readable code over manual optimizations
 - Use React.memo only when necessary for specific cases
 - Leverage Tailwind CSS's purging for production builds
 
 ### Debugging
+
 - Use browser DevTools for React component inspection
 - Console logging is acceptable for development debugging
 - Remove or comment out debug logs before committing
 - Use Vitest debugger for unit test issues
 
 ### Component Development
+
 - Start with shadcn/ui components when possible
 - Use Tailwind CSS for custom styling
 - Test components with React Testing Library
 - Ensure responsive design with Tailwind prefixes
 
 ### Code Review Checklist
+
 - [ ] All imports organized correctly with @ aliases
 - [ ] TypeScript types are explicit and appropriate
 - [ ] Components follow shadcn/ui and Tailwind patterns

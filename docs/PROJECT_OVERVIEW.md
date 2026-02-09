@@ -8,12 +8,14 @@
 ## Technology Stack
 
 ### Frontend
+
 - **Framework**: Vite + React
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui
 - **Real-time Database**: Firebase Realtime Database
 
 ### UI Theme
+
 - **Style Direction**: 1930s Noir / Bureaucratic Minimalist
 - **Primary Colors**:
   - Liberal Blue: `#2b5d84`

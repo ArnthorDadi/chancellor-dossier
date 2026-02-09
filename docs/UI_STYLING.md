@@ -13,6 +13,7 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ## Color Palette
 
 ### Light Theme (1930s Office)
+
 ```css
 --liberal-blue: #2b5d84;
 --fascist-red: #9c2a2a;
@@ -23,6 +24,7 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ```
 
 ### Dark Theme (Noir Atmosphere)
+
 ```css
 --liberal-blue: #3d7ba4;
 --fascist-red: #bc3a3a;
@@ -35,17 +37,20 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ## Typography System
 
 ### Primary Fonts
+
 - **Special Elite**: Typewriter aesthetic for headers
 - **Courier Prime**: Body text and bureaucratic forms
 - **Fallback**: System monospace fonts
 
 ### Loading Strategy
+
 ```tsx
 // Add to index.css or main layout
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&display=swap');
 ```
 
 ### Typography Patterns
+
 ```tsx
 // Bureaucratic Header
 <h1 className="font-special-elite text-2xl text-liberal-blue">
@@ -61,6 +66,7 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ## Component Patterns
 
 ### Digital Envelope
+
 ```tsx
 <div className="border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg p-4">
   <div className="border border-dashed border-hitler-brown p-6">
@@ -70,13 +76,14 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ```
 
 ### Role Cards
+
 ```tsx
 // Liberal Card
 <div className="bg-liberal-blue text-white p-4 rounded border-2 border-noir-black">
   <h3 className="font-special-elite">LIBERAL</h3>
 </div>
 
-// Fascist Card  
+// Fascist Card
 <div className="bg-fascist-red text-white p-4 rounded border-2 border-noir-black">
   <h3 className="font-special-elite">FASCIST</h3>
 </div>
@@ -88,6 +95,7 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ```
 
 ### Buttons with Noir Styling
+
 ```tsx
 <Button className="bg-liberal-blue hover:bg-liberal-blue/90 border-2 border-noir-black">
   Investigate
@@ -101,19 +109,20 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ## Responsive Design
 
 ### Mobile-First Rules
+
 - **Touch Targets**: Minimum 44x44px for all interactive elements
 - **Container**: Full width on mobile (< 768px)
 - **Typography**: Readable without zooming
 
 ### Desktop Scaling
+
 ```tsx
 // Desktop container with max-width
-<div className="w-full max-w-2xl mx-auto p-4">
-  {/* Game content */}
-</div>
+<div className="w-full max-w-2xl mx-auto p-4">{/* Game content */}</div>
 ```
 
 ### Zero Horizontal Scroll
+
 - All layouts must be 100vw compliant
 - Use overflow-x-hidden on containers when necessary
 - Test on smallest target devices (320px width)
@@ -121,6 +130,7 @@ This guide provides styling guidelines for the Secret Hitler Envelopes game app,
 ## Asset Management
 
 ### File Naming Conventions
+
 ```
 src/assets/
 ├── icons/
@@ -136,12 +146,14 @@ src/assets/
 ```
 
 ### General Guidelines
+
 - **Format**: SVG for icons, WebP for photos
 - **Size**: Optimize for mobile, keep under 100KB per asset
 - **Period Authenticity**: Use aged, worn textures for envelopes
 - **Consistency**: Maintain noir aesthetic across all visual elements
 
 ### shadcn/ui Integration
+
 - Extend existing shadcn/ui theme with custom noir colors
 - Maintain component variants while adding period styling
 - Use Tailwind CSS v4 custom properties for theme colors
@@ -151,12 +163,14 @@ src/assets/
 For detailed component templates and implementation patterns, see [COMPONENT_DEVELOPMENT.md](./COMPONENT_DEVELOPMENT.md).
 
 ### Quick Reference Templates
+
 - **NoirButton**: Extended shadcn/ui Button with role-specific variants
 - **DigitalEnvelope**: Core envelope component with noir styling and reveal states
 - **RoleCard**: Role reveal cards with period-appropriate styling
 - **BureaucraticForm**: Form components with typewriter aesthetic
 
 ### Testing Guidelines for Noir Components
+
 - Visual regression testing for variant consistency
 - Accessibility testing for color contrast compliance
 - Mobile touch testing for 44x44px minimum targets

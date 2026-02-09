@@ -1,40 +1,45 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { useRoom } from '@/hooks/use-room'
-import { useAuth } from '@/hooks/use-auth'
-import type { Room, Player } from '@/types/game-types'
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useRoom } from "@/hooks/use-room";
+import { useAuth } from "@/hooks/use-auth";
+import type { Room, Player } from "@/types/game-types";
 
 interface AdminControlPanelProps {
-  room: Room
-  onPlayerRemove?: (playerId: string) => void
-  onAdminTransfer?: (playerId: string) => void
-  onSetStartingPlayer?: (playerId: string) => void
-  onStartGame?: () => void
+  room: Room;
+  onPlayerRemove?: (playerId: string) => void;
+  onAdminTransfer?: (playerId: string) => void;
+  onSetStartingPlayer?: (playerId: string) => void;
+  onStartGame?: () => void;
 }
 
-export function AdminControlPanel({ 
-  room, 
-  onPlayerRemove, 
-  onAdminTransfer, 
+export function AdminControlPanel({
+  room,
+  onPlayerRemove,
+  onAdminTransfer,
   onSetStartingPlayer,
-  onStartGame 
+  onStartGame,
 }: AdminControlPanelProps) {
-  const { user } = useAuth()
-  const { removePlayerFromRoom, transferAdmin, updatePlayerName, startGame } = useRoom()
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
-  const [actionType, setActionType] = useState<'start' | 'remove' | 'transfer' | null>(null)
-  const [targetPlayer, setTargetPlayer] = useState<Player | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
+  const { user } = useAuth();
+  const { removePlayerFromRoom, transferAdmin, updatePlayerName, startGame } =
+    useRoom();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [actionType, setActionType] = useState<
+    "start" | "remove" | "transfer" | null
+  >(null);
+  const [targetPlayer, setTargetPlayer] = useState<Player | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const isAdmin = user?.uid === room.metadata?.adminId
-  const players = Object.values(room.players || {})
-  const playerCount = players.length
-  const canStartGame = playerCount >= 5
+  const isAdmin = user?.uid === room.metadata?.adminId;
+  const players = Object.values(room.players || {});
+  const playerCount = players.length;
+  const canStartGame = playerCount >= 5;
 
   if (!isAdmin) {
     return (
       <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
-        <h3 className="font-bold text-lg mb-4 text-liberal-blue">WAITING FOR ADMIN</h3>
+        <h3 className="font-bold text-lg mb-4 text-liberal-blue">
+          WAITING FOR ADMIN
+        </h3>
         <p className="font-courier text-sm text-noir-black/70">
           The room admin will start the game when ready
         </p>
@@ -46,75 +51,79 @@ export function AdminControlPanel({
           </div>
         )}
       </div>
-    )
+    );
   }
 
   const handlePlayerRemove = async (playerId: string) => {
-    if (!user || playerId === user.uid) return
-    
-    const player = room.players[playerId]
-    if (!player) return
+    if (!user || playerId === user.uid) return;
 
-    setTargetPlayer(player)
-    setActionType('remove')
-    setShowConfirmDialog(true)
-  }
+    const player = room.players[playerId];
+    if (!player) return;
+
+    setTargetPlayer(player);
+    setActionType("remove");
+    setShowConfirmDialog(true);
+  };
 
   const handleAdminTransfer = async (playerId: string) => {
-    if (!user || playerId === user.uid) return
-    
-    const player = room.players[playerId]
-    if (!player) return
+    if (!user || playerId === user.uid) return;
 
-    setTargetPlayer(player)
-    setActionType('transfer')
-    setShowConfirmDialog(true)
-  }
+    const player = room.players[playerId];
+    if (!player) return;
+
+    setTargetPlayer(player);
+    setActionType("transfer");
+    setShowConfirmDialog(true);
+  };
 
   const handleSetStartingPlayer = async (playerId: string) => {
-    onSetStartingPlayer?.(playerId)
-  }
+    onSetStartingPlayer?.(playerId);
+  };
 
   const confirmAction = async () => {
-    if (!targetPlayer || !actionType || !user) return
+    if (!targetPlayer || !actionType || !user) return;
 
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
       switch (actionType) {
-        case 'remove':
-          await removePlayerFromRoom(targetPlayer.id)
-          onPlayerRemove?.(targetPlayer.id)
-          break
-        case 'transfer':
-          await transferAdmin(targetPlayer.id)
-          onAdminTransfer?.(targetPlayer.id)
-          break
-        case 'start':
-          await startGame()
-          onStartGame?.()
-          break
+        case "remove":
+          await removePlayerFromRoom(targetPlayer.id);
+          onPlayerRemove?.(targetPlayer.id);
+          break;
+        case "transfer":
+          await transferAdmin(targetPlayer.id);
+          onAdminTransfer?.(targetPlayer.id);
+          break;
+        case "start":
+          await startGame();
+          onStartGame?.();
+          break;
       }
     } catch (error) {
-      console.error('Admin action failed:', error)
+      console.error("Admin action failed:", error);
     } finally {
-      setIsProcessing(false)
-      setShowConfirmDialog(false)
-      setActionType(null)
-      setTargetPlayer(null)
+      setIsProcessing(false);
+      setShowConfirmDialog(false);
+      setActionType(null);
+      setTargetPlayer(null);
     }
-  }
+  };
 
   const handleStartGameClick = () => {
-    setActionType('start')
-    setShowConfirmDialog(true)
-  }
+    setActionType("start");
+    setShowConfirmDialog(true);
+  };
 
   return (
     <>
       <div className="border-4 border-noir-black bg-white p-6 shadow-2xl space-y-6">
         <div className="text-center">
-          <h3 className="font-bold text-lg mb-2 text-liberal-blue">ADMIN CONTROL PANEL</h3>
-          <div className="font-courier text-xs text-noir-black/60">Room Administrator Controls</div>
+          <h3 className="font-bold text-lg mb-2 text-liberal-blue">
+            ADMIN CONTROL PANEL
+          </h3>
+          <div className="font-courier text-xs text-noir-black/60">
+            Room Administrator Controls
+          </div>
         </div>
 
         {/* Game Status */}
@@ -125,10 +134,12 @@ export function AdminControlPanel({
               <span className="font-bold">Players:</span> {playerCount}/10
             </p>
             <p className="font-courier text-xs">
-              <span className="font-bold">Status:</span> {room.metadata?.status || 'UNKNOWN'}
+              <span className="font-bold">Status:</span>{" "}
+              {room.metadata?.status || "UNKNOWN"}
             </p>
             <p className="font-courier text-xs">
-              <span className="font-bold">Can Start:</span> {canStartGame ? 'YES' : 'NO'}
+              <span className="font-bold">Can Start:</span>{" "}
+              {canStartGame ? "YES" : "NO"}
             </p>
           </div>
         </div>
@@ -148,9 +159,11 @@ export function AdminControlPanel({
             <Button
               onClick={handleStartGameClick}
               className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black text-lg"
-              disabled={room.metadata?.status !== 'LOBBY'}
+              disabled={room.metadata?.status !== "LOBBY"}
             >
-              {room.metadata?.status === 'LOBBY' ? 'START GAME' : 'GAME IN PROGRESS'}
+              {room.metadata?.status === "LOBBY"
+                ? "START GAME"
+                : "GAME IN PROGRESS"}
             </Button>
           )}
         </div>
@@ -163,7 +176,7 @@ export function AdminControlPanel({
               <div
                 key={player.id}
                 className={`flex items-center justify-between p-2 border border-noir-black/20 ${
-                  player.id === user?.uid ? 'bg-liberal-blue/10' : 'bg-white'
+                  player.id === user?.uid ? "bg-liberal-blue/10" : "bg-white"
                 }`}
               >
                 <div className="flex items-center space-x-2">
@@ -175,11 +188,11 @@ export function AdminControlPanel({
                       {player.name}
                     </p>
                     <p className="font-courier text-xs text-noir-black/60">
-                      {player.id === user?.uid ? 'ADMIN' : 'PLAYER'}
+                      {player.id === user?.uid ? "ADMIN" : "PLAYER"}
                     </p>
                   </div>
                 </div>
-                
+
                 {player.id !== user?.uid && (
                   <div className="flex space-x-1">
                     <Button
@@ -222,25 +235,30 @@ export function AdminControlPanel({
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white border-4 border-noir-black shadow-2xl max-w-md w-full p-6">
             <h3 className="font-bold text-lg mb-4">
-              {actionType === 'start' && 'CONFIRM GAME START'}
-              {actionType === 'remove' && 'CONFIRM PLAYER REMOVAL'}
-              {actionType === 'transfer' && 'CONFIRM ADMIN TRANSFER'}
+              {actionType === "start" && "CONFIRM GAME START"}
+              {actionType === "remove" && "CONFIRM PLAYER REMOVAL"}
+              {actionType === "transfer" && "CONFIRM ADMIN TRANSFER"}
             </h3>
-            
+
             <div className="mb-6">
-              {actionType === 'start' && (
+              {actionType === "start" && (
                 <p className="font-courier text-sm text-noir-black/80">
-                  Starting the game will assign roles and lock the room. No new players will be able to join. This action cannot be undone.
+                  Starting the game will assign roles and lock the room. No new
+                  players will be able to join. This action cannot be undone.
                 </p>
               )}
-              {actionType === 'remove' && targetPlayer && (
+              {actionType === "remove" && targetPlayer && (
                 <p className="font-courier text-sm text-noir-black/80">
-                  Are you sure you want to remove <span className="font-bold">{targetPlayer.name}</span> from the room? They will need to rejoin if they want to play.
+                  Are you sure you want to remove{" "}
+                  <span className="font-bold">{targetPlayer.name}</span> from
+                  the room? They will need to rejoin if they want to play.
                 </p>
               )}
-              {actionType === 'transfer' && targetPlayer && (
+              {actionType === "transfer" && targetPlayer && (
                 <p className="font-courier text-sm text-noir-black/80">
-                  Are you sure you want to transfer admin rights to <span className="font-bold">{targetPlayer.name}</span>? You will no longer have admin control.
+                  Are you sure you want to transfer admin rights to{" "}
+                  <span className="font-bold">{targetPlayer.name}</span>? You
+                  will no longer have admin control.
                 </p>
               )}
             </div>
@@ -257,20 +275,20 @@ export function AdminControlPanel({
               <Button
                 onClick={confirmAction}
                 className={`flex-1 font-bold border-2 border-noir-black ${
-                  actionType === 'start' 
-                    ? 'bg-liberal-blue hover:bg-liberal-blue/90 text-white'
-                    : actionType === 'remove'
-                    ? 'bg-fascist-red hover:bg-fascist-red/90 text-white'
-                    : 'bg-yellow-400 hover:bg-yellow-400/90 text-black'
+                  actionType === "start"
+                    ? "bg-liberal-blue hover:bg-liberal-blue/90 text-white"
+                    : actionType === "remove"
+                      ? "bg-fascist-red hover:bg-fascist-red/90 text-white"
+                      : "bg-yellow-400 hover:bg-yellow-400/90 text-black"
                 }`}
                 disabled={isProcessing}
               >
-                {isProcessing ? 'PROCESSING...' : 'CONFIRM'}
+                {isProcessing ? "PROCESSING..." : "CONFIRM"}
               </Button>
             </div>
           </div>
         </div>
       )}
     </>
-  )
+  );
 }

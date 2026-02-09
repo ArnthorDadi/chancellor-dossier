@@ -1,63 +1,65 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import type { Role, Party } from '@/types/game-types'
-import { cn } from '@/lib/utils'
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import type { Role, Party } from "@/types/game-types";
+import { cn } from "@/lib/utils";
 
 interface DigitalEnvelopeProps {
-  role?: Role
-  party?: Party
-  isOpen?: boolean
-  onToggle?: () => void
+  role?: Role;
+  party?: Party;
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
 interface RoleCardProps {
-  role: Role
-  className?: string
+  role: Role;
+  className?: string;
 }
 
 interface PartyCardProps {
-  party: Party
-  className?: string
+  party: Party;
+  className?: string;
 }
 
 function RoleCard({ role, className }: RoleCardProps) {
   const roleConfig = {
     LIBERAL: {
-      bg: 'bg-liberal-blue',
-      text: 'text-white',
-      border: 'border-2 border-noir-black',
-      label: 'LIBERAL',
-      symbol: '🦅',
-      description: 'Protect democracy and enact liberal policies'
+      bg: "bg-liberal-blue",
+      text: "text-white",
+      border: "border-2 border-noir-black",
+      label: "LIBERAL",
+      symbol: "🦅",
+      description: "Protect democracy and enact liberal policies",
     },
     FASCIST: {
-      bg: 'bg-fascist-red',
-      text: 'text-white',
-      border: 'border-2 border-noir-black',
-      label: 'FASCIST',
-      symbol: '🦎',
-      description: 'Enact fascist policies and elect Hitler as Chancellor'
+      bg: "bg-fascist-red",
+      text: "text-white",
+      border: "border-2 border-noir-black",
+      label: "FASCIST",
+      symbol: "🦎",
+      description: "Enact fascist policies and elect Hitler as Chancellor",
     },
     HITLER: {
-      bg: 'bg-hitler-brown',
-      text: 'text-white',
-      border: 'border-2 border-noir-black',
-      label: 'HITLER',
-      symbol: '🎭',
-      description: 'Get elected Chancellor or enact 6 fascist policies to win'
-    }
-  }
+      bg: "bg-hitler-brown",
+      text: "text-white",
+      border: "border-2 border-noir-black",
+      label: "HITLER",
+      symbol: "🎭",
+      description: "Get elected Chancellor or enact 6 fascist policies to win",
+    },
+  };
 
-  const config = roleConfig[role]
+  const config = roleConfig[role];
 
   return (
-    <div className={cn(
-      'p-6 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105',
-      config.bg,
-      config.text,
-      config.border,
-      className
-    )}>
+    <div
+      className={cn(
+        "p-6 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105",
+        config.bg,
+        config.text,
+        config.border,
+        className
+      )}
+    >
       <div className="text-center space-y-4">
         <div className="text-6xl">{config.symbol}</div>
         <div>
@@ -70,65 +72,64 @@ function RoleCard({ role, className }: RoleCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function PartyCard({ party, className }: PartyCardProps) {
   const partyConfig = {
     LIBERAL: {
-      bg: 'bg-liberal-blue',
-      text: 'text-white',
-      border: 'border-2 border-noir-black',
-      label: 'LIBERAL PARTY',
-      description: 'Member of the Liberal Party'
+      bg: "bg-liberal-blue",
+      text: "text-white",
+      border: "border-2 border-noir-black",
+      label: "LIBERAL PARTY",
+      description: "Member of the Liberal Party",
     },
     FASCIST: {
-      bg: 'bg-fascist-red',
-      text: 'text-white',
-      border: 'border-2 border-noir-black',
-      label: 'FASCIST PARTY',
-      description: 'Member of the Fascist Party'
-    }
-  }
+      bg: "bg-fascist-red",
+      text: "text-white",
+      border: "border-2 border-noir-black",
+      label: "FASCIST PARTY",
+      description: "Member of the Fascist Party",
+    },
+  };
 
-  const config = partyConfig[party]
+  const config = partyConfig[party];
 
   return (
-    <div className={cn(
-      'p-4 rounded-lg shadow-md',
-      config.bg,
-      config.text,
-      config.border,
-      className
-    )}>
+    <div
+      className={cn(
+        "p-4 rounded-lg shadow-md",
+        config.bg,
+        config.text,
+        config.border,
+        className
+      )}
+    >
       <div className="text-center space-y-2">
-        <h4 className="font-special-elite text-lg font-bold">
-          {config.label}
-        </h4>
-        <p className="text-xs opacity-90">
-          {config.description}
-        </p>
+        <h4 className="font-special-elite text-lg font-bold">{config.label}</h4>
+        <p className="text-xs opacity-90">{config.description}</p>
       </div>
     </div>
-  )
+  );
 }
 
-export function DigitalEnvelope({ 
-  role, 
-  party, 
-  isOpen: controlledIsOpen, 
-  onToggle 
+export function DigitalEnvelope({
+  role,
+  party,
+  isOpen: controlledIsOpen,
+  onToggle,
 }: DigitalEnvelopeProps) {
-  const [internalIsOpen, setInternalIsOpen] = useState(false)
-  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen =
+    controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
 
   const handleToggle = () => {
     if (onToggle) {
-      onToggle()
+      onToggle();
     } else {
-      setInternalIsOpen(!isOpen)
+      setInternalIsOpen(!isOpen);
     }
-  }
+  };
 
   if (!role || !party) {
     return (
@@ -137,7 +138,7 @@ export function DigitalEnvelope({
           <p className="font-courier text-sm">ROLE INFORMATION UNAVAILABLE</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -150,7 +151,9 @@ export function DigitalEnvelope({
             SECRET DOSSIER
           </h2>
           <div className="inline-block border border-noir-black px-3 py-1 bg-yellow-200/80">
-            <span className="text-xs font-bold text-noir-black">TOP SECRET</span>
+            <span className="text-xs font-bold text-noir-black">
+              TOP SECRET
+            </span>
           </div>
         </div>
 
@@ -192,12 +195,12 @@ export function DigitalEnvelope({
             variant={isOpen ? "outline" : "default"}
             className={cn(
               "font-bold px-6 py-3 border-2 border-noir-black transition-all duration-200",
-              isOpen 
+              isOpen
                 ? "border-liberal-blue text-liberal-blue hover:bg-liberal-blue hover:text-white"
                 : "bg-liberal-blue text-white hover:bg-liberal-blue/90"
             )}
           >
-            {isOpen ? 'CLOSE ENVELOPE' : 'OPEN ENVELOPE'}
+            {isOpen ? "CLOSE ENVELOPE" : "OPEN ENVELOPE"}
           </Button>
         </div>
       </div>
@@ -214,7 +217,7 @@ export function DigitalEnvelope({
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default DigitalEnvelope
+export default DigitalEnvelope;

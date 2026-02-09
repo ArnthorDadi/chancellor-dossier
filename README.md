@@ -1,12 +1,12 @@
 # Chancellor Dossier
 
-*Gather 'round, political schemers...*
+_Gather 'round, political schemers..._
 
 Tired of fumbling with those tiny envelopes? Sick of accidentally revealing your secret identity when someone's cat decides the membership cards look delicious? Fear not! **Chancellor Dossier** is here to save your clandestine political machinations.
 
 This digital companion app for **Secret Hitler** replaces those pesky physical envelopes with sleek, digital party cards and membership reveals. No more lost cards, no more bent envelopes, no more "wait, which one was mine again?" Just pure, unadulterated political intrigue at your fingertips.
 
-*Now, shall we begin the vote?*
+_Now, shall we begin the vote?_
 
 ## Tech Stack
 
@@ -100,12 +100,14 @@ This project uses two testing frameworks:
 Unit tests are located next to the files they test with the `.test.ts` or `.test.tsx` extension.
 
 Features:
+
 - **Vite-native**: Fast test execution with Vite's transform pipeline
 - **UI Mode**: Interactive test runner with `pnpm test:ui`
 - **Coverage**: Built-in coverage with v8
 - **Watch Mode**: Automatic re-run on file changes
 
 Example test files:
+
 - `src/lib/utils.test.ts` - Unit tests for utility functions
 - `src/app.test.tsx` - Component tests for the App component
 
@@ -114,6 +116,7 @@ Example test files:
 E2E tests are located in the `tests/e2e/` directory with the `.spec.ts` extension.
 
 Features:
+
 - **Browser**: Chromium only (configurable in `playwright.config.ts`)
 - **Auto-start dev server**: Tests automatically start the Vite dev server
 - **UI Mode**: Interactive test runner with `pnpm test:e2e:ui`
@@ -122,6 +125,7 @@ Features:
 - **Trace Viewer**: Available for failed tests
 
 Example test files:
+
 - `tests/e2e/app.spec.ts` - E2E tests for the main application
 
 ## React Compiler
@@ -136,9 +140,9 @@ If you are developing a production application, we recommend updating the config
 
 ```js
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       // Other configs...
 
@@ -153,40 +157,40 @@ export default defineConfig([
     ],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
       // other options...
     },
   },
-])
+]);
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from "eslint-plugin-react-x";
+import reactDom from "eslint-plugin-react-dom";
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       // Other configs...
       // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
+      reactX.configs["recommended-typescript"],
       // Enable lint rules for React DOM
       reactDom.configs.recommended,
     ],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
         tsconfigRootDir: import.meta.dirname,
       },
       // other options...
     },
   },
-])
+]);
 ```

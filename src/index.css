@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -47,7 +47,7 @@
 
 :root {
   --radius: 0.625rem;
-  
+
   /* Noir Color Palette - Light Theme */
   --liberal-blue: #2b5d84;
   --fascist-red: #9c2a2a;
@@ -130,34 +130,65 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Noir Typography Classes */
   .font-special-elite {
-    font-family: 'Special Elite', 'Courier New', monospace;
+    font-family: "Special Elite", "Courier New", monospace;
   }
-  
-  .font-courier {
-    font-family: 'Courier Prime', 'Courier New', monospace;
-  }
-  
-  /* Noir Color Classes */
-  .bg-liberal-blue { background-color: var(--liberal-blue); }
-  .bg-fascist-red { background-color: var(--fascist-red); }
-  .bg-hitler-brown { background-color: var(--hitler-brown); }
-  .bg-parchment { background-color: var(--parchment-bg); }
-  .bg-vintage-cream { background-color: var(--vintage-cream); }
-  .bg-aged-paper { background-color: var(--aged-paper); }
-  
-  .text-liberal-blue { color: var(--liberal-blue); }
-  .text-fascist-red { color: var(--fascist-red); }
-  .text-hitler-brown { color: var(--hitler-brown); }
-  .text-noir-black { color: var(--noir-black); }
-  .text-aged-paper { color: var(--aged-paper); }
-  
-  .border-liberal-blue { border-color: var(--liberal-blue); }
-  .border-fascist-red { border-color: var(--fascist-red); }
-  .border-hitler-brown { border-color: var(--hitler-brown); }
-  .border-noir-black { border-color: var(--noir-black); }
-  .border-aged-paper { border-color: var(--aged-paper); }
-}
 
+  .font-courier {
+    font-family: "Courier Prime", "Courier New", monospace;
+  }
+
+  /* Noir Color Classes */
+  .bg-liberal-blue {
+    background-color: var(--liberal-blue);
+  }
+  .bg-fascist-red {
+    background-color: var(--fascist-red);
+  }
+  .bg-hitler-brown {
+    background-color: var(--hitler-brown);
+  }
+  .bg-parchment {
+    background-color: var(--parchment-bg);
+  }
+  .bg-vintage-cream {
+    background-color: var(--vintage-cream);
+  }
+  .bg-aged-paper {
+    background-color: var(--aged-paper);
+  }
+
+  .text-liberal-blue {
+    color: var(--liberal-blue);
+  }
+  .text-fascist-red {
+    color: var(--fascist-red);
+  }
+  .text-hitler-brown {
+    color: var(--hitler-brown);
+  }
+  .text-noir-black {
+    color: var(--noir-black);
+  }
+  .text-aged-paper {
+    color: var(--aged-paper);
+  }
+
+  .border-liberal-blue {
+    border-color: var(--liberal-blue);
+  }
+  .border-fascist-red {
+    border-color: var(--fascist-red);
+  }
+  .border-hitler-brown {
+    border-color: var(--hitler-brown);
+  }
+  .border-noir-black {
+    border-color: var(--noir-black);
+  }
+  .border-aged-paper {
+    border-color: var(--aged-paper);
+  }
+}

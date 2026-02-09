@@ -40,12 +40,12 @@ interface NoirComponentProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof noirComponentVariants> {}
 
-function NoirComponent({ 
-  variant, 
-  size, 
-  className, 
-  children, 
-  ...props 
+function NoirComponent({
+  variant,
+  size,
+  className,
+  children,
+  ...props
 }: NoirComponentProps) {
   return (
     <div
@@ -79,7 +79,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground border-transparent",
         link: "text-primary underline-offset-4 hover:underline border-transparent",
-        
+
         // Noir Variants
         liberal: "bg-liberal-blue text-vintage-cream hover:bg-liberal-blue/90 border-liberal-blue-900 shadow-md",
         fascist: "bg-fascist-red text-vintage-cream hover:bg-fascist-red/90 border-fascist-red-900 shadow-md",
@@ -144,7 +144,7 @@ const envelopeVariants = cva(
     variants: {
       variant: {
         liberal: "border-liberal-blue bg-parchment",
-        fascist: "border-fascist-red bg-parchment", 
+        fascist: "border-fascist-red bg-parchment",
         hitler: "border-hitler-brown bg-parchment",
         neutral: "border-aged-paper bg-parchment",
       },
@@ -173,15 +173,15 @@ interface DigitalEnvelopeProps
   isRevealed?: boolean
 }
 
-function DigitalEnvelope({ 
-  variant, 
-  sealed, 
-  size, 
-  title, 
-  isRevealed = false, 
-  className, 
-  children, 
-  ...props 
+function DigitalEnvelope({
+  variant,
+  sealed,
+  size,
+  title,
+  isRevealed = false,
+  className,
+  children,
+  ...props
 }: DigitalEnvelopeProps) {
   return (
     <div className="relative">
@@ -197,7 +197,7 @@ function DigitalEnvelope({
             {title}
           </h3>
         )}
-        
+
         {isRevealed ? (
           <div className="border border-dashed border-hitler-brown p-6 bg-parchment/50">
             {children}
@@ -213,7 +213,7 @@ function DigitalEnvelope({
           </div>
         )}
       </div>
-      
+
       {/* Stamp Effect */}
       {!isRevealed && (
         <div className="absolute -top-2 -right-2 w-12 h-12 bg-fascist-red rounded-full border-2 border-noir-black flex items-center justify-center">
@@ -242,7 +242,7 @@ const roleCardVariants = cva(
     variants: {
       role: {
         liberal: "bg-liberal-blue text-white border-noir-black shadow-liberal-blue/30",
-        fascist: "bg-fascist-red text-white border-noir-black shadow-fascist-red/30", 
+        fascist: "bg-fascist-red text-white border-noir-black shadow-fascist-red/30",
         hitler: "bg-hitler-brown text-white border-noir-black shadow-hitler-brown/30",
         unknown: "bg-parchment text-noir-black border-liberal-blue shadow-parchment/30",
       },
@@ -266,18 +266,18 @@ interface RoleCardProps
   isRevealed?: boolean
 }
 
-function RoleCard({ 
-  role, 
-  revealed, 
-  playerName, 
-  roleLabel, 
-  isRevealed = false, 
-  className, 
-  ...props 
+function RoleCard({
+  role,
+  revealed,
+  playerName,
+  roleLabel,
+  isRevealed = false,
+  className,
+  ...props
 }: RoleCardProps) {
   const displayRole = isRevealed ? role : "unknown"
   const displayLabel = isRevealed ? roleLabel?.toUpperCase() : "CLASSIFIED"
-  
+
   return (
     <div
       className={cn(roleCardVariants({ role: displayRole, revealed: isRevealed, className }))}
@@ -287,19 +287,19 @@ function RoleCard({
         <div className="text-sm font-courier-prime opacity-80">
           AGENT: {playerName}
         </div>
-        
+
         <div className="py-4">
           <div className="font-special-elite text-2xl">
             {displayLabel}
           </div>
         </div>
-        
+
         {isRevealed && (
           <div className="text-xs font-courier-prime opacity-70 border-t border-current pt-4">
             TOP SECRET // CLEARANCE LEVEL 5
           </div>
         )}
-        
+
         {!isRevealed && (
           <div className="text-xs font-courier-prime opacity-70 border-t border-current pt-4">
             PENDING CLEARANCE // AUTHENTICATION REQUIRED
@@ -343,13 +343,13 @@ interface BureaucraticFormProps
   subtitle?: string
 }
 
-function BureaucraticForm({ 
-  variant, 
-  title, 
-  subtitle, 
-  className, 
-  children, 
-  ...props 
+function BureaucraticForm({
+  variant,
+  title,
+  subtitle,
+  className,
+  children,
+  ...props
 }: BureaucraticFormProps) {
   return (
     <form
@@ -366,11 +366,11 @@ function BureaucraticForm({
           </p>
         )}
       </div>
-      
+
       <div className="space-y-4">
         {children}
       </div>
-      
+
       <div className="mt-6 pt-4 border-t border-current/30 text-center">
         <p className="font-courier-prime text-xs text-noir-black/50">
           CONFIDENTIAL // FOR INTERNAL USE ONLY
@@ -411,10 +411,10 @@ const componentVariants = cva(
         // Keep existing variants
         default: "existing-default-classes",
         outline: "existing-outline-classes",
-        
+
         // Add noir variants
         liberal: "bg-liberal-blue text-vintage-cream border-liberal-blue-900",
-        fascist: "bg-fascist-red text-vintage-cream border-fascist-red-900", 
+        fascist: "bg-fascist-red text-vintage-cream border-fascist-red-900",
         hitler: "bg-hitler-brown text-vintage-cream border-hitler-brown-900",
         noir: "bg-shadow-black text-vintage-cream border-parchment",
       },
@@ -432,7 +432,7 @@ const componentVariants = cva(
 )
 
 // 3. Create component with noir props
-interface NoirComponentProps extends 
+interface NoirComponentProps extends
   React.HTMLAttributes<HTMLElement>,
   VariantProps<typeof componentVariants> {
   // Additional noir-specific props
@@ -462,8 +462,8 @@ const NoirComponent = React.forwardRef<HTMLElement, NoirComponentProps>(
                md:max-w-2xl md:p-6
                lg:max-w-4xl lg:p-8">
   <NoirCard variant="parchment">
-    <h1 className="font-special-elite text-lg 
-                     md:text-2xl 
+    <h1 className="font-special-elite text-lg
+                     md:text-2xl
                      lg:text-3xl">
       Secret Dossier
     </h1>
@@ -475,8 +475,8 @@ const NoirComponent = React.forwardRef<HTMLElement, NoirComponentProps>(
 
 ```typescript
 // Ensure 44x44px minimum touch targets with noir styling
-<Button 
-  variant="liberal" 
+<Button
+  variant="liberal"
   size="lg"
   className="min-h-[44px] min-w-[44px]"
 >
@@ -488,7 +488,7 @@ const NoirComponent = React.forwardRef<HTMLElement, NoirComponentProps>(
 
 ```typescript
 // Dark mode support for noir components
-<div className="bg-parchment text-noir-black 
+<div className="bg-parchment text-noir-black
                dark:bg-shadow-black dark:text-vintage-cream
                border-liberal-blue
                dark:border-aged-paper">
@@ -506,7 +506,7 @@ const NoirComponent = React.forwardRef<HTMLElement, NoirComponentProps>(
   LIBERAL DIRECTIVE
 </h1>
 
-// Fascist warnings  
+// Fascist warnings
 <p className="font-courier-prime text-fascist-red">
   WARNING: SECURITY BREACH
 </p>
@@ -557,7 +557,7 @@ describe('NoirButton Variants', () => {
     render(<Button variant="liberal">Liberal Action</Button>)
     expect(screen.getByRole('button')).toHaveClass('bg-liberal-blue')
   })
-  
+
   it('applies correct typography', () => {
     render(<Button font="elite">Typewriter Text</Button>)
     expect(screen.getByRole('button')).toHaveClass('font-special-elite')
@@ -569,30 +569,30 @@ describe('NoirButton Variants', () => {
 
 ```typescript
 // Test color contrast in noir components
-test('noir components maintain accessibility', async ({ page }) => {
-  await page.goto('/')
+test("noir components maintain accessibility", async ({ page }) => {
+  await page.goto("/");
   await checkA11y(page, {
     rules: {
-      'color-contrast': { enabled: true }
-    }
-  })
-})
+      "color-contrast": { enabled: true },
+    },
+  });
+});
 ```
 
 ### Mobile Touch Testing
 
 ```typescript
 // Test touch targets on mobile
-test('noir buttons meet touch target requirements', async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 667 })
-  const buttons = await page.locator('button[variant*="liberal"]')
-  
+test("noir buttons meet touch target requirements", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  const buttons = await page.locator('button[variant*="liberal"]');
+
   for (const button of await buttons.all()) {
-    const box = await button.boundingBox()
-    expect(box?.width).toBeGreaterThanOrEqual(44)
-    expect(box?.height).toBeGreaterThanOrEqual(44)
+    const box = await button.boundingBox();
+    expect(box?.width).toBeGreaterThanOrEqual(44);
+    expect(box?.height).toBeGreaterThanOrEqual(44);
   }
-})
+});
 ```
 
 ---

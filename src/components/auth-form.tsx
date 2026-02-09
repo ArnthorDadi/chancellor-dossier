@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import { useAuth } from '@/hooks/use-auth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function AuthForm() {
-  const { user, loading, error, signIn, signOutWithCleanup } = useAuth()
-  const [username, setUsername] = useState<string>('')
+  const { user, loading, error, signIn, signOutWithCleanup } = useAuth();
+  const [username, setUsername] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!username.trim()) {
-      return
+      return;
     }
-    
-    await signIn(username.trim())
-  }
+
+    await signIn(username.trim());
+  };
 
   if (loading) {
     return (
@@ -24,7 +24,7 @@ export function AuthForm() {
           <p className="mt-4 font-courier text-sm">Authenticating...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (user) {
@@ -38,9 +38,11 @@ export function AuthForm() {
             <div className="border-2 border-noir-black p-4 bg-parchment mb-6">
               <p className="font-courier text-sm mb-2">User ID:</p>
               <p className="font-courier text-xs break-all">{user.uid}</p>
-              <p className="font-courier text-sm mt-2">Status: Anonymous User</p>
+              <p className="font-courier text-sm mt-2">
+                Status: Anonymous User
+              </p>
             </div>
-            <Button 
+            <Button
               onClick={signOutWithCleanup}
               className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black"
             >
@@ -49,7 +51,7 @@ export function AuthForm() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -59,11 +61,11 @@ export function AuthForm() {
           <h2 className="font-special-elite text-2xl text-liberal-blue mb-6">
             SECRET DOSSIER ACCESS
           </h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label 
-                htmlFor="username" 
+              <label
+                htmlFor="username"
                 className="block font-courier text-sm font-bold mb-2"
               >
                 ENTER YOUR NAME:
@@ -92,7 +94,7 @@ export function AuthForm() {
               disabled={!username.trim() || loading}
               className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold border-2 border-noir-black"
             >
-              {loading ? 'AUTHENTICATING...' : 'ACCESS FILES'}
+              {loading ? "AUTHENTICATING..." : "ACCESS FILES"}
             </Button>
           </form>
 
@@ -104,5 +106,5 @@ export function AuthForm() {
         </div>
       </div>
     </div>
-  )
+  );
 }
