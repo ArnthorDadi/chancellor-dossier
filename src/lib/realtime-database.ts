@@ -11,7 +11,7 @@ const app = initializeApp({
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 }, 'chancellor-dossier-database')
 
-export const database = getDatabase(app)
+export const database = getDatabase(app, import.meta.env.VITE_FIREBASE_DATABASE_URL)
 
 /**
  * Generate a short room code (4-6 alphanumeric characters)
@@ -20,11 +20,11 @@ export const generateRoomCode = (): string => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   const length = Math.floor(Math.random() * 3) + 4 // 4-6 characters
   let code = ''
-  
+
   for (let i = 0; i < length; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length))
   }
-  
+
   return code
 }
 
@@ -48,7 +48,7 @@ export const generateUniqueRoomCode = async (): Promise<string> => {
   do {
     code = generateRoomCode()
     attempts++
-    
+
     if (attempts > maxAttempts) {
       throw new Error('Failed to generate unique room code after maximum attempts')
     }
@@ -75,7 +75,7 @@ export const dbPaths = {
  * Subscribe to room changes
  */
 export const subscribeToRoom = (
-  roomId: string, 
+  roomId: string,
   callback: (snapshot: any) => void
 ) => {
   const roomRef = ref(database, dbPaths.room(roomId))
@@ -86,7 +86,7 @@ export const subscribeToRoom = (
  * Subscribe to specific room data
  */
 export const subscribeToRoomMetadata = (
-  roomId: string, 
+  roomId: string,
   callback: (metadata: any) => void
 ) => {
   const metadataRef = ref(database, dbPaths.roomMetadata(roomId))
@@ -96,7 +96,7 @@ export const subscribeToRoomMetadata = (
 }
 
 export const subscribeToRoomPlayers = (
-  roomId: string, 
+  roomId: string,
   callback: (players: any) => void
 ) => {
   const playersRef = ref(database, dbPaths.roomPlayers(roomId))
@@ -106,7 +106,7 @@ export const subscribeToRoomPlayers = (
 }
 
 export const subscribeToRoomRoles = (
-  roomId: string, 
+  roomId: string,
   callback: (roles: any) => void
 ) => {
   const rolesRef = ref(database, dbPaths.roomRoles(roomId))
@@ -124,7 +124,7 @@ export const createRoom = async (roomId: string, roomData: any): Promise<void> =
 }
 
 export const updateRoomMetadata = async (
-  roomId: string, 
+  roomId: string,
   metadata: any
 ): Promise<void> => {
   const metadataRef = ref(database, dbPaths.roomMetadata(roomId))
@@ -132,8 +132,8 @@ export const updateRoomMetadata = async (
 }
 
 export const updatePlayer = async (
-  roomId: string, 
-  playerId: string, 
+  roomId: string,
+  playerId: string,
   playerData: any
 ): Promise<void> => {
   const playerRef = ref(database, dbPaths.player(roomId, playerId))
@@ -141,8 +141,8 @@ export const updatePlayer = async (
 }
 
 export const addPlayerToRoom = async (
-  roomId: string, 
-  playerId: string, 
+  roomId: string,
+  playerId: string,
   playerData: any
 ): Promise<void> => {
   const playerRef = ref(database, dbPaths.player(roomId, playerId))
@@ -150,7 +150,7 @@ export const addPlayerToRoom = async (
 }
 
 export const assignRoles = async (
-  roomId: string, 
+  roomId: string,
   roles: Record<string, any>
 ): Promise<void> => {
   const rolesRef = ref(database, dbPaths.roomRoles(roomId))
@@ -241,17 +241,17 @@ export const validateRoomSchema = async (roomId: string): Promise<boolean> => {
   if (!room) return false
 
   const { metadata, players, roles, investigations } = room
-  
+
   // Check required metadata fields
   const requiredMetadataFields = ['status', 'adminId', 'createdAt', 'roomName']
-  const hasValidMetadata = metadata && requiredMetadataFields.every(field => 
+  const hasValidMetadata = metadata && requiredMetadataFields.every(field =>
     metadata[field] !== undefined && metadata[field] !== null
   )
 
   // Check that all required sections exist
-  return hasValidMetadata && 
-         typeof players === 'object' && 
-         typeof roles === 'object' && 
+  return hasValidMetadata &&
+         typeof players === 'object' &&
+         typeof roles === 'object' &&
          typeof investigations === 'object'
 }
 

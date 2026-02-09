@@ -10,10 +10,11 @@ import {
   deleteRoom,
   resetRoom,
   assignRoles,
+  storeInvestigation,
   subscribeToRoom
 } from '@/lib/realtime-database'
 import type { Room } from '@/types/game-types'
-import { assignRoles as assignGameRoles, canStartGame } from '@/lib/game-logic'
+import { assignRoles as assignGameRoles, canStartGame, getPartyFromRole } from '@/lib/game-logic'
 import { useAuth } from './use-auth'
 
 export interface UseRoomReturn {
@@ -21,23 +22,26 @@ export interface UseRoomReturn {
   createNewRoom: (roomName?: string) => Promise<string>
   joinRoom: (roomId: string, playerName: string) => Promise<void>
   leaveRoom: () => Promise<void>
-  
+   
   // Room state
   room: Room | null
   loading: boolean
   error: string | null
   isPlayerInRoom: boolean
-  
+   
   // Admin functions
   startGame: () => Promise<void>
   resetGame: (reason?: 'GAME_OVER' | 'ADMIN_REQUEST' | 'CONSENSUS') => Promise<void>
   removePlayerFromRoom: (playerId: string) => Promise<void>
   transferAdmin: (playerId: string) => Promise<void>
-  
+   
   // Player functions
   setPlayerReady: (ready: boolean) => Promise<void>
   updatePlayerName: (name: string) => Promise<void>
-  
+   
+  // Investigation functions
+  investigatePlayer: (targetId: string) => Promise<void>
+   
   // Cleanup
   cleanup: () => void
 }
@@ -316,6 +320,57 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     }
   }, [room, user])
 
+  // Investigate player (President only)
+  const investigatePlayer = useCallback(async (targetId: string): Promise<void> => {
+    if (!room || !user) {
+      throw new Error('No room or user')
+    }
+
+    // Validate current player is President
+    if (room.metadata.currentPresidentId !== user.uid) {
+      throw new Error('Only President can investigate players')
+    }
+
+    // Validate target exists and is not self
+    if (!room.players[targetId]) {
+      throw new Error('Target player not found')
+    }
+
+    if (targetId === user.uid) {
+      throw new Error('Cannot investigate yourself')
+    }
+
+    // Check if target was already investigated
+    if (room.investigations?.[targetId]) {
+      throw new Error('Player already investigated')
+    }
+
+    // Get target's party membership from roles
+    const targetRole = room.roles?.[targetId]
+    if (!targetRole) {
+      throw new Error('Target role not found - game may not be started')
+    }
+
+    const targetParty = getPartyFromRole(targetRole)
+
+    try {
+      // Store investigation result scoped to President's user ID
+      const investigationData = {
+        investigationId: `${user.uid}_${Date.now()}`,
+        result: targetParty,
+        investigatedBy: user.uid,
+        investigatedAt: Date.now(),
+        targetId
+      }
+
+      await storeInvestigation(room.id, targetId, investigationData)
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to store investigation'
+      setError(errorMessage)
+      throw err
+    }
+  }, [room, user])
+
   // Cleanup subscriptions
   const cleanup = useCallback(() => {
     subscriptions.forEach(unsub => unsub())
@@ -341,6 +396,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     transferAdmin,
     setPlayerReady,
     updatePlayerName,
+    investigatePlayer,
     cleanup
   }
 }
