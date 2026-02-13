@@ -43,7 +43,7 @@ export function AuthPage() {
   }, [user, navigate, from, intent, handleCreateRoom]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-parchment-bg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-blue-red-horizontal">
       {/* Subtle paper texture background */}
       <div className="absolute inset-0 opacity-30">
         <div

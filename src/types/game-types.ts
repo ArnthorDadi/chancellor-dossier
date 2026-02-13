@@ -42,7 +42,15 @@ export interface Room {
   metadata: RoomMetadata;
   players: Record<string, Player>;
   roles?: Record<string, Role>; // Secret data, only accessible to specific players
-  investigations?: Record<string, { investigationId: string; result: Party }>; // President-only access
+  investigations?: Record<string, InvestigationResultData>; // President-only access
+}
+
+export interface InvestigationResultData {
+  investigationId: string;
+  result: Party;
+  investigatedBy: string;
+  investigatedAt: number;
+  targetId: string;
 }
 
 export interface RoleDistribution {

@@ -23,6 +23,7 @@ describe("AuthForm", () => {
       username: null,
       signIn: mockSignIn,
       signOut: mockSignOut,
+      signOutWithCleanup: mockSignOut,
       getToken: vi.fn(),
       updateUsername: vi.fn(),
     });
@@ -46,6 +47,7 @@ describe("AuthForm", () => {
       username: null,
       signIn: mockSignIn,
       signOut: mockSignOut,
+      signOutWithCleanup: mockSignOut,
       getToken: vi.fn(),
       updateUsername: vi.fn(),
     });
@@ -68,6 +70,7 @@ describe("AuthForm", () => {
       username: "TestAgent",
       signIn: mockSignIn,
       signOut: mockSignOut,
+      signOutWithCleanup: mockSignOut,
       getToken: vi.fn(),
       updateUsername: vi.fn(),
     });
@@ -89,6 +92,7 @@ describe("AuthForm", () => {
       username: null,
       signIn: mockSignIn,
       signOut: mockSignOut,
+      signOutWithCleanup: mockSignOut,
       getToken: vi.fn(),
       updateUsername: vi.fn(),
     });
@@ -113,6 +117,7 @@ describe("AuthForm", () => {
       username: "TestAgent",
       signIn: mockSignIn,
       signOut: mockSignOut,
+      signOutWithCleanup: mockSignOut,
       getToken: vi.fn(),
       updateUsername: vi.fn(),
     });

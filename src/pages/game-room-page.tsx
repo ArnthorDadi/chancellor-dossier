@@ -2,18 +2,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useGameState } from "@/hooks/use-game-state";
 import { useRoom } from "@/hooks/use-room";
 import { Button } from "@/components/ui/button";
-import { DigitalEnvelope } from "@/components/digital-envelope";
+import { AuthHeader } from "@/components/auth-header";
 import { InvestigationTargetSelection } from "@/components/investigation-target-selection";
+import { InvestigationResult } from "@/components/investigation-result";
 
 export function GameRoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const gameState = useGameState(roomId);
   const roomHook = useRoom(roomId);
-
-  const handleLeaveGame = () => {
-    navigate("/");
-  };
 
   if (gameState.loading) {
     return (
@@ -49,10 +46,62 @@ export function GameRoomPage() {
 
   // Show Investigation UI during EXECUTIVE_ACTION phase for President
   if (gameState.gameStatus === "EXECUTIVE_ACTION" && gameState.isPresident) {
-    const alreadyInvestigated = Object.keys(
-      gameState.room?.investigations || {}
-    );
+    const investigations = gameState.room?.investigations || {};
+    const alreadyInvestigated = Object.keys(investigations);
+    const hasInvestigationResult = alreadyInvestigated.length > 0;
 
+    // If President has already investigated, show the result
+    if (hasInvestigationResult) {
+      const targetId = alreadyInvestigated[0];
+      const investigation = investigations[targetId];
+      const targetPlayer = gameState.room?.players?.[targetId];
+
+      if (targetPlayer && investigation) {
+        return (
+          <div className="min-h-screen bg-parchment-bg text-noir-black">
+            {/* Paper texture background */}
+            <div className="absolute inset-0 opacity-30">
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px)`,
+                  backgroundSize: "40px 40px",
+                }}
+              ></div>
+            </div>
+
+            <div className="relative z-10 min-h-screen flex flex-col">
+              {/* Header */}
+              <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
+                <div className="container mx-auto px-4 py-4">
+                  <div>
+                    <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                      EXECUTIVE ACTION
+                    </h1>
+                    <p className="font-courier text-sm text-noir-black/70">
+                      {gameState.currentPhase}
+                    </p>
+                  </div>
+                </div>
+              </header>
+
+              {/* Main Content */}
+              <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
+                <div className="w-full max-w-2xl">
+                  <InvestigationResult
+                    targetName={targetPlayer.name}
+                    party={investigation.result}
+                    investigatedAt={investigation.investigatedAt}
+                  />
+                </div>
+              </main>
+            </div>
+          </div>
+        );
+      }
+    }
+
+    // Otherwise show the target selection
     return (
       <div className="min-h-screen bg-parchment-bg text-noir-black">
         {/* Paper texture background */}
@@ -70,22 +119,13 @@ export function GameRoomPage() {
           {/* Header */}
           <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
             <div className="container mx-auto px-4 py-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
-                    EXECUTIVE ACTION
-                  </h1>
-                  <p className="font-courier text-sm text-noir-black/70">
-                    {gameState.currentPhase}
-                  </p>
-                </div>
-                <Button
-                  onClick={handleLeaveGame}
-                  variant="outline"
-                  className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black"
-                >
-                  LEAVE GAME
-                </Button>
+              <div>
+                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                  EXECUTIVE ACTION
+                </h1>
+                <p className="font-courier text-sm text-noir-black/70">
+                  {gameState.currentPhase}
+                </p>
               </div>
             </div>
           </header>
@@ -128,22 +168,13 @@ export function GameRoomPage() {
           {/* Header */}
           <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
             <div className="container mx-auto px-4 py-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
-                    EXECUTIVE ACTION
-                  </h1>
-                  <p className="font-courier text-sm text-noir-black/70">
-                    {gameState.currentPhase}
-                  </p>
-                </div>
-                <Button
-                  onClick={handleLeaveGame}
-                  variant="outline"
-                  className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black"
-                >
-                  LEAVE GAME
-                </Button>
+              <div>
+                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                  EXECUTIVE ACTION
+                </h1>
+                <p className="font-courier text-sm text-noir-black/70">
+                  {gameState.currentPhase}
+                </p>
               </div>
             </div>
           </header>
@@ -152,98 +183,13 @@ export function GameRoomPage() {
           <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
             <div className="w-full max-w-lg">
               <div className="border-4 border-noir-black bg-white p-8 shadow-2xl text-center">
-                <div className="mb-6">
-                  <div className="w-16 h-16 mx-auto mb-4 border-4 border-liberal-blue rounded-full flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-liberal-blue"></div>
-                  </div>
-                  <h2 className="font-special-elite text-2xl text-liberal-blue mb-4">
-                    PRESIDENT ACTING
-                  </h2>
-                  <p className="font-courier text-sm text-noir-black/70 mb-2">
-                    The President is using their executive power
-                  </p>
-                  <p className="font-courier text-xs text-noir-black/60">
-                    Please wait for the President to complete their action...
-                  </p>
-                </div>
-
-                <div className="border-2 border-noir-black/20 bg-vintage-cream p-4 rounded-lg">
-                  <h3 className="font-bold text-sm mb-2 text-liberal-blue">
-                    CURRENT STATUS:
-                  </h3>
-                  <div className="font-courier text-xs space-y-1 text-noir-black/70">
-                    <p>• Game Phase: Executive Action</p>
-                    <p>
-                      • President:{" "}
-                      {gameState.allPlayers.find(
-                        (p) =>
-                          p.id === gameState.room?.metadata?.currentPresidentId
-                      )?.name || "Unknown"}
-                    </p>
-                    <p>
-                      • Enacted Policies: {gameState.enactedPolicies.liberal}{" "}
-                      Liberal, {gameState.enactedPolicies.fascist} Fascist
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </main>
-        </div>
-      </div>
-    );
-  }
-
-  // Show Digital Envelope during role reveal phase
-  if (
-    gameState.gameStatus === "ROLE_REVEAL" &&
-    gameState.currentPlayerRole &&
-    gameState.currentPlayerParty
-  ) {
-    return (
-      <div className="min-h-screen bg-parchment-bg text-noir-black">
-        {/* Paper texture background */}
-        <div className="absolute inset-0 opacity-30">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px)`,
-              backgroundSize: "40px 40px",
-            }}
-          ></div>
-        </div>
-
-        <div className="relative z-10 min-h-screen flex flex-col">
-          {/* Header */}
-          <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
-            <div className="container mx-auto px-4 py-4 text-center">
-              <div className="inline-block">
-                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
-                  SECRET HITLER
-                </h1>
-                <div className="font-bold text-sm md:text-base tracking-wide text-noir-black/70">
-                  DIGITAL ENVELOPES
-                </div>
-              </div>
-            </div>
-          </header>
-
-          {/* Main Content */}
-          <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
-            <div className="w-full max-w-lg">
-              <div className="text-center mb-6">
-                <h2 className="font-special-elite text-xl text-liberal-blue mb-2">
-                  {gameState.currentPhase}
+                <h2 className="font-special-elite text-2xl text-fascist-red mb-4">
+                  WAITING FOR PRESIDENT
                 </h2>
-                <p className="font-courier text-sm text-noir-black/60">
-                  Your secret identity is enclosed below
+                <p className="font-courier text-sm text-noir-black/70">
+                  The President is investigating a player's party membership
                 </p>
               </div>
-
-              <DigitalEnvelope
-                role={gameState.currentPlayerRole}
-                party={gameState.currentPlayerParty}
-              />
             </div>
           </main>
         </div>
@@ -265,25 +211,19 @@ export function GameRoomPage() {
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Auth Header with hamburger menu */}
+        <AuthHeader className="sticky top-0 z-50" />
+
         {/* Header */}
-        <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm pt-20">
+        <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
-                  GAME ROOM
-                </h1>
-                <p className="font-courier text-sm text-noir-black/70">
-                  {gameState.currentPhase}
-                </p>
-              </div>
-              <Button
-                onClick={handleLeaveGame}
-                variant="outline"
-                className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black"
-              >
-                LEAVE GAME
-              </Button>
+            <div>
+              <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                EXECUTIVE ACTION
+              </h1>
+              <p className="font-courier text-sm text-noir-black/70">
+                {gameState.currentPhase}
+              </p>
             </div>
           </div>
         </header>

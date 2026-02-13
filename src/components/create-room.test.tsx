@@ -50,6 +50,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });
@@ -346,6 +347,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });
@@ -376,6 +378,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });

@@ -88,3 +88,28 @@
 - Tests verify button display, loading states, error handling, accessibility, and touch targets
 - All tests passing (120 tests total), TypeScript compilation and build successful
 - Updated PRD to mark both F9-UI and F9-FUNC as completed
+
+2026-02-13: Completed Investigation Target Selection (F5-UI) and Investigation Result Storage (F5-FUNC)
+- Fixed bugs in existing InvestigationTargetSelection component tests (ReferenceError, incorrect selectors)
+- Added investigation power availability check in useRoom hook (President can only investigate once per game)
+- Created InvestigationResult component with 1930s noir styling to display investigation results
+- Shows player's party membership (Liberal/Fascist) with high-contrast noir styling
+- Integrated InvestigationResult into game-room-page to show after President completes investigation
+- Updated game-types.ts to include proper InvestigationResultData interface with investigatedAt timestamp
+- Fixed pre-existing TypeScript errors in test files (added signOutWithCleanup mock)
+- Added 6 comprehensive unit tests for InvestigationResult component
+- All tests passing (132 tests total), TypeScript compilation successful
+- Updated PRD to mark both F5-UI and F5-FUNC as completed
+
+2026-02-13: Completed Admin Control Panel (F10-UI) and Admin Operations (F10-FUNC)
+- Added setStartingPlayer function to useRoom hook for updating metadata.startingPlayerId
+- AdminControlPanel component already had comprehensive UI with:
+  * Admin controls only shown to room admin
+  * 'Start Game' button with confirmation dialog
+  * Player management with Remove, Transfer Admin, and Set Starting Player buttons
+  * Player count and game status display
+  * Waiting message for non-admin users
+  * Disabled state when game is in progress
+- Added 15 comprehensive unit tests covering all admin panel functionality
+- All tests passing, TypeScript compilation successful
+- Updated PRD to mark both F10-UI and F10-FUNC as completed

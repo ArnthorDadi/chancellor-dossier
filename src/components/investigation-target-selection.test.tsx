@@ -104,6 +104,9 @@ describe("InvestigationTargetSelection", () => {
       .getByText("Target Player")
       .closest("[data-player-id]");
     expect(targetPlayerCard).toContainElement(investigateButtons[0]);
+    const investigatedPlayerCard = screen
+      .getByText("Already Investigated")
+      .closest("[data-player-id]");
     expect(investigatedPlayerCard).not.toContainElement(investigateButtons[0]);
   });
 
@@ -160,7 +163,9 @@ describe("InvestigationTargetSelection", () => {
 
     // Should show loading state
     expect(screen.getByText("Investigating...")).toBeInTheDocument();
-    expect(screen.getByText("Investigating...")).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Investigating..." })
+    ).toBeDisabled();
   });
 
   it("applies correct styling for different player states", () => {
@@ -173,18 +178,22 @@ describe("InvestigationTargetSelection", () => {
       />
     );
 
-    // President card should have brown border
-    const presidentCard = screen.getByText("President Player").closest("div");
+    // President card should have brown border - use data-player-id selector
+    const presidentCard = screen
+      .getByText("President Player")
+      .closest('[data-player-id="president-1"]');
     expect(presidentCard).toHaveClass("border-hitler-brown");
 
     // Already investigated card should have gray border
     const investigatedCard = screen
       .getByText("Already Investigated")
-      .closest("div");
+      .closest('[data-player-id="player-3"]');
     expect(investigatedCard).toHaveClass("border-noir-black/30");
 
     // Eligible player card should have blue border
-    const targetCard = screen.getByText("Target Player").closest("div");
+    const targetCard = screen
+      .getByText("Target Player")
+      .closest('[data-player-id="player-2"]');
     expect(targetCard).toHaveClass("border-liberal-blue");
   });
 
@@ -288,13 +297,13 @@ describe("InvestigationTargetSelection", () => {
       />
     );
 
-    // President avatar
-    expect(screen.getByText("PP")).toBeInTheDocument();
+    // President avatar - "President Player" -> "PR"
+    expect(screen.getByText("PR")).toBeInTheDocument();
 
-    // Target player avatar
-    expect(screen.getByText("TP")).toBeInTheDocument();
+    // Target player avatar - "Target Player" -> "TA"
+    expect(screen.getByText("TA")).toBeInTheDocument();
 
-    // Already investigated avatar
-    expect(screen.getByText("AI")).toBeInTheDocument();
+    // Already investigated avatar - "Already Investigated" -> "AL"
+    expect(screen.getByText("AL")).toBeInTheDocument();
   });
 });

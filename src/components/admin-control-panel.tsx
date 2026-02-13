@@ -20,7 +20,7 @@ export function AdminControlPanel({
   onStartGame,
 }: AdminControlPanelProps) {
   const { user } = useAuth();
-  const { removePlayerFromRoom, transferAdmin, updatePlayerName, startGame } =
+  const { removePlayerFromRoom, transferAdmin, startGame, setStartingPlayer } =
     useRoom();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [actionType, setActionType] = useState<
@@ -77,7 +77,12 @@ export function AdminControlPanel({
   };
 
   const handleSetStartingPlayer = async (playerId: string) => {
-    onSetStartingPlayer?.(playerId);
+    try {
+      await setStartingPlayer(playerId);
+      onSetStartingPlayer?.(playerId);
+    } catch (error) {
+      console.error("Failed to set starting player:", error);
+    }
   };
 
   const confirmAction = async () => {

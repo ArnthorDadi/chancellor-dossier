@@ -79,7 +79,7 @@
         "Highlight uninvestigated players",
         "Prevent investigating self or already investigated players"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F5-FUNC",
@@ -92,7 +92,7 @@
         "Store party membership (Liberal/Fascist only)",
         "Scope result to President's user ID only"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F6-UI",
@@ -184,7 +184,7 @@
         "Display 'Set Starting Player' option",
         "Show confirmation dialog before starting game"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F10-FUNC",
@@ -202,7 +202,7 @@
         "Update room status from 'LOBBY' to 'ROLE_REVEAL'",
         "Lock room to prevent new players from joining"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F11-UI",

@@ -94,8 +94,19 @@ export const useCreateRoom = (): UseCreateRoomReturn => {
       const roomCode = await generateCode();
 
       // Create room with existing database schema
-      const { initializeRoomSchema } = await import("@/lib/realtime-database");
+      const { initializeRoomSchema, addPlayerToRoom } =
+        await import("@/lib/realtime-database");
       await initializeRoomSchema(roomCode, user.uid);
+
+      // Add admin as the first player
+      const adminPlayerData = {
+        id: user.uid,
+        name: "Game Admin",
+        isReady: false,
+        joinedAt: new Date().toISOString(),
+      };
+
+      await addPlayerToRoom(roomCode, user.uid, adminPlayerData);
 
       // Navigate to the room lobby
       navigate(`/room/${roomCode}`);

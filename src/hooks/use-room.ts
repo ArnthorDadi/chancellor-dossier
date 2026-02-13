@@ -40,6 +40,7 @@ export interface UseRoomReturn {
   ) => Promise<void>;
   removePlayerFromRoom: (playerId: string) => Promise<void>;
   transferAdmin: (playerId: string) => Promise<void>;
+  setStartingPlayer: (playerId: string) => Promise<void>;
 
   // Player functions
   setPlayerReady: (ready: boolean) => Promise<void>;
@@ -371,6 +372,33 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     [room, user]
   );
 
+  // Set starting player (admin only)
+  const setStartingPlayer = useCallback(
+    async (playerId: string): Promise<void> => {
+      if (!room || !user) {
+        throw new Error("No room or user");
+      }
+
+      if (room.metadata.adminId !== user.uid) {
+        throw new Error("Only admin can set the starting player");
+      }
+
+      if (!room.players[playerId]) {
+        throw new Error("Player not found in room");
+      }
+
+      try {
+        await updateRoomMetadata(room.id, { startingPlayerId: playerId });
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to set starting player";
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [room, user]
+  );
+
   // Investigate player (President only)
   const investigatePlayer = useCallback(
     async (targetId: string): Promise<void> => {
@@ -381,6 +409,13 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
       // Validate current player is President
       if (room.metadata.currentPresidentId !== user.uid) {
         throw new Error("Only President can investigate players");
+      }
+
+      // Check if investigation power is available (President can only investigate once per game)
+      const existingInvestigations = room.investigations || {};
+      const hasInvestigated = Object.keys(existingInvestigations).length > 0;
+      if (hasInvestigated) {
+        throw new Error("Investigation power already used in this game");
       }
 
       // Validate target exists and is not self
@@ -449,6 +484,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     resetGame,
     removePlayerFromRoom,
     transferAdmin,
+    setStartingPlayer,
     setPlayerReady,
     updatePlayerName,
     investigatePlayer,

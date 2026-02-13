@@ -69,8 +69,8 @@ export function AuthHeader({ className }: AuthHeaderProps) {
             </div>
           </div>
 
-          {/* Right side - Auth Button */}
-          <div className="flex items-center">
+          {/* Right side - Action Buttons */}
+          <div className="flex items-center space-x-2">
             {loading ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-liberal-blue"></div>
@@ -78,36 +78,43 @@ export function AuthHeader({ className }: AuthHeaderProps) {
                   Loading...
                 </span>
               </div>
-            ) : user ? (
-              <Button
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-                size="sm"
-                className="bg-fascist-red hover:bg-fascist-red/90 text-white font-bold px-4 py-2 border-2 border-noir-black transition-colors"
-              >
-                {isSigningOut ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                    <span>LOGOUT...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <span>🚪</span>
-                    <span>LOGOUT</span>
-                  </div>
-                )}
-              </Button>
             ) : (
-              <Button
-                onClick={handleSignIn}
-                size="sm"
-                className="bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-4 py-2 border-2 border-noir-black transition-colors"
-              >
-                <div className="flex items-center space-x-2">
-                  <span>🔐</span>
-                  <span>LOGIN</span>
-                </div>
-              </Button>
+              <>
+                {/* Login/Logout button */}
+                {user ? (
+                  <Button
+                    onClick={handleSignOut}
+                    variant="outline"
+                    disabled={isSigningOut}
+                    className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black font-courier text-sm"
+                    size="sm"
+                  >
+                    {isSigningOut ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></div>
+                        <span>LOGOUT...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <span>👤</span>
+                        <span>LOGOUT</span>
+                      </div>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleSignIn}
+                    variant="outline"
+                    className="bg-liberal-blue hover:bg-liberal-blue/90 text-white border-2 border-noir-black font-courier text-sm"
+                    size="sm"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <span>🔐</span>
+                      <span>LOGIN</span>
+                    </div>
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </div>

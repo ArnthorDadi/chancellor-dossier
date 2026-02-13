@@ -25,47 +25,6 @@ export function LandingPage() {
         {/* Auth Header */}
         <AuthHeader />
 
-        {/* Main Header - Inspired by Secret Hitler logo treatment */}
-        <header
-          className="border-b-8 border-noir-black backdrop-blur-sm shadow-2xl relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(to right, var(--liberal-blue), var(--fascist-red))",
-          }}
-        >
-          {/* Subtle texture overlay */}
-          <div className="absolute inset-0 opacity-20">
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(to top right, rgba(255,255,255,0.1), transparent, rgba(0,0,0,0.1))",
-              }}
-            ></div>
-          </div>
-
-          <div className="container mx-auto px-4 py-8 text-center relative z-10">
-            <div className="border-4 border-noir-black p-6 shadow-2xl transform rotate-1 bg-vintage-cream">
-              <h1
-                className="font-special-elite text-4xl md:text-6xl tracking-tight mb-2"
-                style={{
-                  background:
-                    "linear-gradient(to right, var(--liberal-blue), var(--fascist-red))",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  color: "transparent",
-                }}
-              >
-                SECRET HITLER
-              </h1>
-              <div className="font-bold text-lg md:text-xl tracking-wide text-noir-black/90 border-t-2 border-noir-black pt-2">
-                DIGITAL ENVELOPES
-              </div>
-            </div>
-          </div>
-        </header>
-
         {/* Main Hero Section - Board Game Inspired */}
         <section className="container mx-auto px-4 py-12 max-w-6xl">
           {/* Call to Action - Classified Dossier Style */}

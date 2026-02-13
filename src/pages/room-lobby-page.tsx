@@ -11,10 +11,6 @@ export function RoomLobbyPage() {
   const { user } = useAuth();
   const { room, loading, error } = useRoom(roomId);
 
-  const handleLeaveRoom = () => {
-    navigate("/");
-  };
-
   const handleStartGame = () => {
     // This will be implemented later
     console.log("Start game clicked");
@@ -72,29 +68,6 @@ export function RoomLobbyPage() {
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Header */}
-        <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm pt-20">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
-                  ROOM LOBBY
-                </h1>
-                <p className="font-courier text-sm text-noir-black/70">
-                  Waiting for players to join...
-                </p>
-              </div>
-              <Button
-                onClick={handleLeaveRoom}
-                variant="outline"
-                className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black"
-              >
-                LEAVE ROOM
-              </Button>
-            </div>
-          </div>
-        </header>
-
         {/* Main Content */}
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto space-y-8">
@@ -150,6 +123,15 @@ export function RoomLobbyPage() {
                 )}
               </div>
             </div>
+
+            {/* Leave Room */}
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black font-courier py-6 text-lg"
+            >
+              🚪 LEAVE ROOM
+            </Button>
           </div>
         </main>
       </div>

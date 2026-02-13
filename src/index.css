@@ -191,4 +191,37 @@
   .border-aged-paper {
     border-color: var(--aged-paper);
   }
+
+  /* Gradient Backgrounds */
+  .bg-gradient-red-blue {
+    background: linear-gradient(
+      135deg,
+      var(--fascist-red) 0%,
+      var(--liberal-blue) 100%
+    );
+  }
+
+  .bg-gradient-blue-red {
+    background: linear-gradient(
+      135deg,
+      var(--liberal-blue) 0%,
+      var(--fascist-red) 100%
+    );
+  }
+
+  .bg-gradient-red-blue-horizontal {
+    background: linear-gradient(
+      90deg,
+      var(--fascist-red) 0%,
+      var(--liberal-blue) 100%
+    );
+  }
+
+  .bg-gradient-blue-red-horizontal {
+    background: linear-gradient(
+      90deg,
+      var(--liberal-blue) 0%,
+      var(--fascist-red) 100%
+    );
+  }
 }
