@@ -50,12 +50,12 @@ export function InvestigationTargetSelection({
   };
 
   return (
-    <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
+    <div className="border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20">
       <div className="text-center mb-6">
-        <h2 className="font-special-elite text-2xl text-liberal-blue mb-2">
+        <h2 className="font-special-elite text-2xl text-liberal-blue mb-2 dark:text-blue-300">
           INVESTIGATION POWER
         </h2>
-        <p className="font-courier text-sm text-noir-black/70">
+        <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
           As President, you may investigate one player's party membership
         </p>
       </div>
@@ -76,10 +76,10 @@ export function InvestigationTargetSelection({
                   isSelf
                     ? "border-hitler-brown bg-hitler-brown/10"
                     : isAlreadyInvestigated
-                      ? "border-noir-black/30 bg-noir-black/10"
+                      ? "border-noir-black/30 bg-noir-black/10 dark:border-white/20 dark:bg-white/5"
                       : isEligible
                         ? "border-liberal-blue bg-liberal-blue/5 hover:border-liberal-blue/70 cursor-pointer"
-                        : "border-noir-black/20 bg-noir-black/5"
+                        : "border-noir-black/20 bg-noir-black/5 dark:border-white/10 dark:bg-white/5"
                 }
               `}
             >
@@ -96,7 +96,7 @@ export function InvestigationTargetSelection({
                           ? "bg-noir-black/40"
                           : isEligible
                             ? "bg-liberal-blue"
-                            : "bg-noir-black/20"
+                            : "bg-noir-black/20 dark:bg-white/20"
                     }
                   `}
                   >
@@ -104,7 +104,7 @@ export function InvestigationTargetSelection({
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-base">
+                    <h3 className="font-bold text-base dark:text-white">
                       {player.name}
                       {isSelf && (
                         <span className="ml-2 text-xs font-courier text-hitler-brown">
@@ -112,7 +112,7 @@ export function InvestigationTargetSelection({
                         </span>
                       )}
                     </h3>
-                    <p className="font-courier text-xs text-noir-black/60">
+                    <p className="font-courier text-xs text-noir-black/60 dark:text-white/60">
                       {getInvestigationStatus(player)}
                     </p>
                   </div>
@@ -125,7 +125,7 @@ export function InvestigationTargetSelection({
                     disabled={loading || investigating}
                     className={`
                       bg-liberal-blue hover:bg-liberal-blue/90 text-white 
-                      font-bold border-2 border-noir-black
+                      font-bold border-2 border-noir-black dark:border-white/20
                       min-h-[44px] min-w-[100px]
                       ${loading || investigating ? "opacity-50 cursor-not-allowed" : ""}
                     `}
@@ -143,7 +143,7 @@ export function InvestigationTargetSelection({
 
                 {/* Status indicators */}
                 {isAlreadyInvestigated && (
-                  <div className="flex items-center space-x-2 text-noir-black/60">
+                  <div className="flex items-center space-x-2 text-noir-black/60 dark:text-white/60">
                     <svg
                       className="w-4 h-4"
                       fill="currentColor"
@@ -160,7 +160,7 @@ export function InvestigationTargetSelection({
                 )}
 
                 {isSelf && (
-                  <div className="flex items-center space-x-2 text-hitler-brown/60">
+                  <div className="flex items-center space-x-2 text-hitler-brown/60 dark:text-hitler-brown/80">
                     <svg
                       className="w-4 h-4"
                       fill="currentColor"
@@ -182,11 +182,11 @@ export function InvestigationTargetSelection({
       </div>
 
       {/* Instructions */}
-      <div className="mt-6 p-4 border-2 border-noir-black/20 bg-vintage-cream rounded-lg">
-        <h3 className="font-bold text-sm mb-2 text-liberal-blue">
+      <div className="mt-6 p-4 border-2 border-noir-black/20 bg-vintage-cream rounded-lg dark:bg-card-foreground/5 dark:border-white/20">
+        <h3 className="font-bold text-sm mb-2 text-liberal-blue dark:text-blue-300">
           INVESTIGATION PROTOCOL:
         </h3>
-        <ul className="font-courier text-xs space-y-1 text-noir-black/70">
+        <ul className="font-courier text-xs space-y-1 text-noir-black/70 dark:text-white/70">
           <li>• Select one player to investigate their party membership</li>
           <li>• Investigation results are visible only to you</li>
           <li>• Each player can only be investigated once per game</li>

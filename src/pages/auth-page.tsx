@@ -43,9 +43,9 @@ export function AuthPage() {
   }, [user, navigate, from, intent, handleCreateRoom]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-blue-red-horizontal">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-blue-red-horizontal dark:opacity-80">
       {/* Subtle paper texture background */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 dark:opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -57,12 +57,12 @@ export function AuthPage() {
 
       <div className="relative z-10 w-full max-w-md mx-4">
         {user && isCreatingRoom ? (
-          <div className="bg-white border-2 border-noir-black rounded-lg p-8 text-center">
+          <div className="bg-white border-2 border-noir-black rounded-lg p-8 text-center dark:bg-card dark:border-white/20">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-liberal-blue mx-auto mb-4"></div>
-            <h2 className="font-special-elite text-xl text-liberal-blue mb-2">
+            <h2 className="font-special-elite text-xl text-liberal-blue mb-2 dark:text-blue-300">
               ESTABLISHING SAFE HOUSE...
             </h2>
-            <p className="font-courier text-sm text-noir-black/70">
+            <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
               Initializing secure location
             </p>
           </div>

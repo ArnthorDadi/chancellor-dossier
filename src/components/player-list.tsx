@@ -15,22 +15,22 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
     return (
       <div
         className={cn(
-          "border-4 border-noir-black bg-white p-6 shadow-2xl",
+          "border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20",
           className
         )}
       >
-        <h3 className="font-bold text-xl mb-4">PLAYERS</h3>
+        <h3 className="font-bold text-xl mb-4 dark:text-white">PLAYERS</h3>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="flex items-center space-x-3 p-3 border-2 border-noir-black bg-vintage-cream"
+              className="flex items-center space-x-3 p-3 border-2 border-noir-black bg-vintage-cream dark:bg-card-foreground/5 dark:border-white/20"
             >
-              <div className="w-8 h-8 bg-noir-black/20 rounded-full animate-pulse"></div>
+              <div className="w-8 h-8 bg-noir-black/20 rounded-full animate-pulse dark:bg-white/20"></div>
               <div className="flex-1">
-                <div className="h-4 bg-noir-black/20 rounded animate-pulse w-3/4"></div>
+                <div className="h-4 bg-noir-black/20 rounded animate-pulse w-3/4 dark:bg-white/20"></div>
               </div>
-              <div className="w-16 h-6 bg-noir-black/20 rounded animate-pulse"></div>
+              <div className="w-16 h-6 bg-noir-black/20 rounded animate-pulse dark:bg-white/20"></div>
             </div>
           ))}
         </div>
@@ -42,12 +42,12 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
     return (
       <div
         className={cn(
-          "border-4 border-fascist-red bg-white p-6 shadow-2xl",
+          "border-4 border-fascist-red bg-white p-6 shadow-2xl dark:bg-card dark:border-red-500/50",
           className
         )}
       >
         <h3 className="font-bold text-xl mb-4 text-fascist-red">ERROR</h3>
-        <p className="text-sm font-courier-prime">{error}</p>
+        <p className="text-sm font-courier-prime dark:text-white/80">{error}</p>
       </div>
     );
   }
@@ -56,12 +56,14 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
     return (
       <div
         className={cn(
-          "border-4 border-noir-black bg-white p-6 shadow-2xl",
+          "border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20",
           className
         )}
       >
-        <h3 className="font-bold text-xl mb-4">PLAYERS</h3>
-        <p className="text-sm text-noir-black/60">No room data available</p>
+        <h3 className="font-bold text-xl mb-4 dark:text-white">PLAYERS</h3>
+        <p className="text-sm text-noir-black/60 dark:text-white/60">
+          No room data available
+        </p>
       </div>
     );
   }
@@ -73,16 +75,18 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
   return (
     <div
       className={cn(
-        "border-4 border-noir-black bg-white p-6 shadow-2xl",
+        "border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20",
         className
       )}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="font-bold text-xl">PLAYERS</h3>
+        <h3 className="font-bold text-xl dark:text-white">PLAYERS</h3>
         <div className="flex items-center space-x-2">
-          <div className="border-2 border-noir-black px-2 py-1 bg-vintage-cream">
-            <span className="text-sm font-bold">{playerCount}/10</span>
+          <div className="border-2 border-noir-black px-2 py-1 bg-vintage-cream dark:bg-card-foreground/5 dark:border-white/20">
+            <span className="text-sm font-bold dark:text-white">
+              {playerCount}/10
+            </span>
           </div>
           {isAdmin && (
             <div className="border-2 border-liberal-blue px-2 py-1 bg-liberal-blue/10">
@@ -95,9 +99,11 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
       {/* Player List */}
       <div className="space-y-3">
         {players.length === 0 ? (
-          <div className="text-center py-8 border-2 border-noir-black bg-vintage-cream">
-            <p className="text-sm text-noir-black/60">No players in room yet</p>
-            <p className="text-xs text-noir-black/40 mt-1">
+          <div className="text-center py-8 border-2 border-noir-black bg-vintage-cream dark:bg-card-foreground/5 dark:border-white/20">
+            <p className="text-sm text-noir-black/60 dark:text-white/60">
+              No players in room yet
+            </p>
+            <p className="text-xs text-noir-black/40 mt-1 dark:text-white/40">
               Be the first to join!
             </p>
           </div>
@@ -117,7 +123,7 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
                     "bg-fascist-red/10 border-fascist-red",
                   !isCurrentUser &&
                     !isAdminPlayer &&
-                    "border-noir-black bg-vintage-cream"
+                    "border-noir-black bg-vintage-cream dark:bg-card-foreground/5 dark:border-white/20"
                 )}
               >
                 {/* Avatar */}
@@ -132,7 +138,7 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
                         "bg-fascist-red text-white border-fascist-red",
                       !isCurrentUser &&
                         !isAdminPlayer &&
-                        "bg-noir-black text-white border-noir-black"
+                        "bg-noir-black text-white border-noir-black dark:bg-white/20 dark:border-white/40"
                     )}
                   >
                     {player.name.charAt(0).toUpperCase()}
@@ -147,7 +153,7 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
                   <div className="flex items-center space-x-2">
                     <p
                       className={cn(
-                        "font-courier-prime text-sm font-bold truncate",
+                        "font-courier-prime text-sm font-bold truncate dark:text-white",
                         isCurrentUser && "text-liberal-blue",
                         isAdminPlayer && !isCurrentUser && "text-fascist-red"
                       )}
@@ -155,7 +161,9 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
                       {player.name}
                     </p>
                     {isCurrentUser && (
-                      <span className="text-xs text-noir-black/60">(You)</span>
+                      <span className="text-xs text-noir-black/60 dark:text-white/60">
+                        (You)
+                      </span>
                     )}
                   </div>
                 </div>
@@ -167,8 +175,8 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
                       className={cn(
                         "border px-2 py-1 text-xs font-bold",
                         player.isReady
-                          ? "bg-green-100 border-green-600 text-green-800"
-                          : "bg-yellow-100 border-yellow-600 text-yellow-800"
+                          ? "bg-green-100 border-green-600 text-green-800 dark:bg-green-900/30 dark:border-green-500 dark:text-green-300"
+                          : "bg-yellow-100 border-yellow-600 text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-500 dark:text-yellow-300"
                       )}
                     >
                       {player.isReady ? "READY" : "WAITING"}
@@ -176,8 +184,10 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
                   )}
 
                   {room.metadata.status !== "LOBBY" && (
-                    <div className="border-2 border-noir-black px-2 py-1 bg-vintage-cream">
-                      <span className="text-xs font-bold">IN GAME</span>
+                    <div className="border-2 border-noir-black px-2 py-1 bg-vintage-cream dark:bg-card-foreground/5 dark:border-white/20">
+                      <span className="text-xs font-bold dark:text-white">
+                        IN GAME
+                      </span>
                     </div>
                   )}
                 </div>
@@ -189,9 +199,9 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
 
       {/* Footer Info */}
       {room.metadata.status === "LOBBY" && (
-        <div className="mt-6 pt-4 border-t-2 border-noir-black">
+        <div className="mt-6 pt-4 border-t-2 border-noir-black dark:border-white/20">
           <div className="text-center">
-            <p className="text-xs text-noir-black/60">
+            <p className="text-xs text-noir-black/60 dark:text-white/60">
               {playerCount < 5
                 ? `Need ${5 - playerCount} more player${5 - playerCount > 1 ? "s" : ""} to start`
                 : "Ready to start game!"}

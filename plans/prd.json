@@ -104,7 +104,7 @@
         "Show system icon for auto theme",
         "Handle button click to cycle through themes"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F6-FUNC",
@@ -117,7 +117,7 @@
         "Apply theme to document root",
         "Save theme preference to localStorage"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F7",

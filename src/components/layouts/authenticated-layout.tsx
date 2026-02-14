@@ -9,9 +9,9 @@ export function AuthenticatedLayout() {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-parchment-bg">
+      <div className="min-h-screen flex items-center justify-center bg-parchment-bg dark:bg-background">
         {/* Subtle paper texture background */}
-        <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 opacity-30 dark:opacity-10">
           <div
             className="absolute inset-0"
             style={{
@@ -21,12 +21,12 @@ export function AuthenticatedLayout() {
           ></div>
         </div>
 
-        <div className="relative z-10 border-4 border-noir-black bg-white p-8 shadow-2xl">
+        <div className="relative z-10 border-4 border-noir-black bg-white p-8 shadow-2xl dark:bg-card dark:border-white/20">
           <div className="flex flex-col items-center space-y-4">
             {/* Loading Spinner */}
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-liberal-blue"></div>
 
-            <p className="font-courier text-sm text-noir-black/70">
+            <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
               VERIFYING ACCESS...
             </p>
           </div>

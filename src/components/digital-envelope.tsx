@@ -133,8 +133,8 @@ export function DigitalEnvelope({
 
   if (!role || !party) {
     return (
-      <div className="border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg p-6">
-        <div className="text-center text-noir-black/60">
+      <div className="border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg p-6 dark:bg-card-foreground/5 dark:border-blue-400/50">
+        <div className="text-center text-noir-black/60 dark:text-white/60">
           <p className="font-courier text-sm">ROLE INFORMATION UNAVAILABLE</p>
         </div>
       </div>
@@ -144,14 +144,14 @@ export function DigitalEnvelope({
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
       {/* Digital Envelope Container */}
-      <div className="border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg p-6">
+      <div className="border-2 border-liberal-blue bg-parchment rounded-lg shadow-lg p-6 dark:bg-card-foreground/5 dark:border-blue-400/50">
         {/* Header */}
         <div className="text-center mb-6">
-          <h2 className="font-special-elite text-2xl text-liberal-blue mb-2">
+          <h2 className="font-special-elite text-2xl text-liberal-blue mb-2 dark:text-blue-300">
             SECRET DOSSIER
           </h2>
-          <div className="inline-block border border-noir-black px-3 py-1 bg-yellow-200/80">
-            <span className="text-xs font-bold text-noir-black">
+          <div className="inline-block border border-noir-black px-3 py-1 bg-yellow-200/80 dark:bg-yellow-900/50 dark:border-white/20">
+            <span className="text-xs font-bold text-noir-black dark:text-white">
               TOP SECRET
             </span>
           </div>
@@ -167,19 +167,19 @@ export function DigitalEnvelope({
             </div>
           ) : (
             // Closed State - Sealed envelope
-            <div className="border-2 border-dashed border-hitler-brown p-8 bg-parchment/50">
+            <div className="border-2 border-dashed border-hitler-brown p-8 bg-parchment/50 dark:bg-card-foreground/10">
               <div className="text-center space-y-4">
                 <div className="text-6xl opacity-60">📋</div>
                 <div>
-                  <p className="font-courier text-sm text-noir-black/70 mb-2">
+                  <p className="font-courier text-sm text-noir-black/70 mb-2 dark:text-white/70">
                     CLASSIFIED DOCUMENT
                   </p>
-                  <p className="font-courier text-xs text-noir-black/50">
+                  <p className="font-courier text-xs text-noir-black/50 dark:text-white/50">
                     Official designation enclosed within
                   </p>
                 </div>
                 <div className="wax-seal flex justify-center">
-                  <div className="w-12 h-12 bg-fascist-red rounded-full border-2 border-noir-black flex items-center justify-center">
+                  <div className="w-12 h-12 bg-fascist-red rounded-full border-2 border-noir-black flex items-center justify-center dark:border-white/20">
                     <span className="text-white font-bold text-xs">TOP</span>
                   </div>
                 </div>
@@ -192,9 +192,8 @@ export function DigitalEnvelope({
         <div className="mt-6 text-center">
           <Button
             onClick={handleToggle}
-            variant={isOpen ? "outline" : "default"}
             className={cn(
-              "font-bold px-6 py-3 border-2 border-noir-black transition-all duration-200",
+              "font-bold px-6 py-3 border-2 border-noir-black transition-all duration-200 dark:border-white/20",
               isOpen
                 ? "border-liberal-blue text-liberal-blue hover:bg-liberal-blue hover:text-white"
                 : "bg-liberal-blue text-white hover:bg-liberal-blue/90"
@@ -208,10 +207,10 @@ export function DigitalEnvelope({
       {/* Instructions */}
       {!isOpen && (
         <div className="text-center space-y-2">
-          <p className="font-courier text-xs text-noir-black/60">
+          <p className="font-courier text-xs text-noir-black/60 dark:text-white/60">
             Press OPEN ENVELOPE to reveal your secret role
           </p>
-          <p className="font-courier text-xs text-noir-black/40">
+          <p className="font-courier text-xs text-noir-black/40 dark:text-white/40">
             Keep your identity confidential from other players
           </p>
         </div>

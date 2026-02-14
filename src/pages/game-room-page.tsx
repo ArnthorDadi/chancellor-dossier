@@ -14,10 +14,12 @@ export function GameRoomPage() {
 
   if (gameState.loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-parchment-bg">
-        <div className="border-4 border-noir-black bg-white p-8 shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-parchment-bg dark:bg-background">
+        <div className="border-4 border-noir-black bg-white p-8 shadow-2xl dark:bg-card dark:border-white/20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-liberal-blue mx-auto"></div>
-          <p className="mt-4 font-courier text-sm">Loading game...</p>
+          <p className="mt-4 font-courier text-sm dark:text-white">
+            Loading game...
+          </p>
         </div>
       </div>
     );
@@ -25,17 +27,17 @@ export function GameRoomPage() {
 
   if (gameState.error || !gameState.room) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-parchment-bg">
-        <div className="border-4 border-fascist-red bg-white p-8 shadow-2xl max-w-md mx-4">
+      <div className="min-h-screen flex items-center justify-center bg-parchment-bg dark:bg-background">
+        <div className="border-4 border-fascist-red bg-white p-8 shadow-2xl max-w-md mx-4 dark:bg-card dark:border-red-500/50">
           <h2 className="font-special-elite text-xl text-fascist-red mb-4 text-center">
             GAME ERROR
           </h2>
-          <p className="font-courier text-sm text-noir-black/70 mb-6 text-center">
+          <p className="font-courier text-sm text-noir-black/70 mb-6 text-center dark:text-white/70">
             {gameState.error || "The game could not be loaded."}
           </p>
           <Button
             onClick={() => navigate("/")}
-            className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold border-2 border-noir-black"
+            className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold border-2 border-noir-black dark:border-white/20"
           >
             BACK TO HOME
           </Button>
@@ -58,9 +60,9 @@ export function GameRoomPage() {
 
       if (targetPlayer && investigation) {
         return (
-          <div className="min-h-screen bg-parchment-bg text-noir-black">
+          <div className="min-h-screen bg-parchment-bg text-noir-black dark:bg-background dark:text-white">
             {/* Paper texture background */}
-            <div className="absolute inset-0 opacity-30">
+            <div className="absolute inset-0 opacity-30 dark:opacity-10">
               <div
                 className="absolute inset-0"
                 style={{
@@ -72,13 +74,13 @@ export function GameRoomPage() {
 
             <div className="relative z-10 min-h-screen flex flex-col">
               {/* Header */}
-              <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
+              <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm dark:border-white/20 dark:bg-card/50">
                 <div className="container mx-auto px-4 py-4">
                   <div>
-                    <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                    <h1 className="font-bold text-2xl md:text-3xl tracking-tight dark:text-white">
                       EXECUTIVE ACTION
                     </h1>
-                    <p className="font-courier text-sm text-noir-black/70">
+                    <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
                       {gameState.currentPhase}
                     </p>
                   </div>
@@ -103,9 +105,9 @@ export function GameRoomPage() {
 
     // Otherwise show the target selection
     return (
-      <div className="min-h-screen bg-parchment-bg text-noir-black">
+      <div className="min-h-screen bg-parchment-bg text-noir-black dark:bg-background dark:text-white">
         {/* Paper texture background */}
-        <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 opacity-30 dark:opacity-10">
           <div
             className="absolute inset-0"
             style={{
@@ -117,13 +119,13 @@ export function GameRoomPage() {
 
         <div className="relative z-10 min-h-screen flex flex-col">
           {/* Header */}
-          <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
+          <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm dark:border-white/20 dark:bg-card/50">
             <div className="container mx-auto px-4 py-4">
               <div>
-                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                <h1 className="font-bold text-2xl md:text-3xl tracking-tight dark:text-white">
                   EXECUTIVE ACTION
                 </h1>
-                <p className="font-courier text-sm text-noir-black/70">
+                <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
                   {gameState.currentPhase}
                 </p>
               </div>
@@ -152,9 +154,9 @@ export function GameRoomPage() {
   // Show waiting screen for non-Presidents during EXECUTIVE_ACTION
   if (gameState.gameStatus === "EXECUTIVE_ACTION" && !gameState.isPresident) {
     return (
-      <div className="min-h-screen bg-parchment-bg text-noir-black">
+      <div className="min-h-screen bg-parchment-bg text-noir-black dark:bg-background dark:text-white">
         {/* Paper texture background */}
-        <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 opacity-30 dark:opacity-10">
           <div
             className="absolute inset-0"
             style={{
@@ -166,13 +168,13 @@ export function GameRoomPage() {
 
         <div className="relative z-10 min-h-screen flex flex-col">
           {/* Header */}
-          <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
+          <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm dark:border-white/20 dark:bg-card/50">
             <div className="container mx-auto px-4 py-4">
               <div>
-                <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+                <h1 className="font-bold text-2xl md:text-3xl tracking-tight dark:text-white">
                   EXECUTIVE ACTION
                 </h1>
-                <p className="font-courier text-sm text-noir-black/70">
+                <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
                   {gameState.currentPhase}
                 </p>
               </div>
@@ -182,11 +184,11 @@ export function GameRoomPage() {
           {/* Main Content */}
           <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
             <div className="w-full max-w-lg">
-              <div className="border-4 border-noir-black bg-white p-8 shadow-2xl text-center">
+              <div className="border-4 border-noir-black bg-white p-8 shadow-2xl text-center dark:bg-card dark:border-white/20">
                 <h2 className="font-special-elite text-2xl text-fascist-red mb-4">
                   WAITING FOR PRESIDENT
                 </h2>
-                <p className="font-courier text-sm text-noir-black/70">
+                <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
                   The President is investigating a player's party membership
                 </p>
               </div>
@@ -198,9 +200,9 @@ export function GameRoomPage() {
   }
 
   return (
-    <div className="min-h-screen bg-parchment-bg text-noir-black">
+    <div className="min-h-screen bg-parchment-bg text-noir-black dark:bg-background dark:text-white">
       {/* Subtle paper texture background */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 dark:opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -215,13 +217,13 @@ export function GameRoomPage() {
         <AuthHeader className="sticky top-0 z-50" />
 
         {/* Header */}
-        <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm">
+        <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm dark:border-white/20 dark:bg-card/50">
           <div className="container mx-auto px-4 py-4">
             <div>
-              <h1 className="font-bold text-2xl md:text-3xl tracking-tight">
+              <h1 className="font-bold text-2xl md:text-3xl tracking-tight dark:text-white">
                 EXECUTIVE ACTION
               </h1>
-              <p className="font-courier text-sm text-noir-black/70">
+              <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
                 {gameState.currentPhase}
               </p>
             </div>
@@ -231,22 +233,24 @@ export function GameRoomPage() {
         {/* Main Content */}
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
-            <div className="border-4 border-noir-black bg-white p-8 shadow-2xl text-center">
-              <h2 className="font-special-elite text-2xl text-liberal-blue mb-4">
+            <div className="border-4 border-noir-black bg-white p-8 shadow-2xl text-center dark:bg-card dark:border-white/20">
+              <h2 className="font-special-elite text-2xl text-liberal-blue mb-4 dark:text-blue-300">
                 GAME IN PROGRESS
               </h2>
-              <p className="font-courier text-sm text-noir-black/70 mb-6">
+              <p className="font-courier text-sm text-noir-black/70 mb-6 dark:text-white/70">
                 Game status: {gameState.gameStatus}
               </p>
-              <p className="font-courier text-sm text-noir-black/60">
+              <p className="font-courier text-sm text-noir-black/60 dark:text-white/60">
                 The game interface will be implemented here.
               </p>
 
               {/* Game info display */}
               <div className="mt-8 space-y-4">
-                <div className="border-2 border-noir-black p-4 bg-vintage-cream">
-                  <h3 className="font-bold text-sm mb-2">GAME INFO:</h3>
-                  <div className="font-courier text-xs space-y-1">
+                <div className="border-2 border-noir-black p-4 bg-vintage-cream dark:bg-card dark:border-white/20">
+                  <h3 className="font-bold text-sm mb-2 dark:text-white">
+                    GAME INFO:
+                  </h3>
+                  <div className="font-courier text-xs space-y-1 dark:text-white/80">
                     <p>Status: {gameState.gameStatus}</p>
                     <p>Players: {gameState.allPlayers.length}</p>
                     <p>

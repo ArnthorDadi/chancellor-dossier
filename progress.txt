@@ -113,3 +113,14 @@
 - Added 15 comprehensive unit tests covering all admin panel functionality
 - All tests passing, TypeScript compilation successful
 - Updated PRD to mark both F10-UI and F10-FUNC as completed
+2026-02-14: Completed Theme Toggle (F6-UI) and Theme State Management (F6-FUNC)
+- Created ThemeProvider context with useTheme hook supporting light/dark/system themes
+- Implemented ThemeToggle component with 1930s noir styling in header
+- Shows sun icon for light, moon for dark, monitor icon for system theme
+- Theme cycles: light -> dark -> system -> light on each click
+- Persists preference to localStorage with fallback to system preference
+- Added matchMedia mock to vitest.setup.ts for jsdom environment
+- Added comprehensive unit tests (13 tests) for useTheme hook and ThemeToggle component
+- Theme is applied to document root as 'light' or 'dark' class
+- All tests passing (147 tests), TypeScript compilation successful
+- Updated PRD to mark both F6-UI and F6-FUNC as completed

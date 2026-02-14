@@ -35,9 +35,9 @@ export function JoinRoomPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-parchment-bg">
+    <div className="min-h-screen flex items-center justify-center bg-parchment-bg dark:bg-background">
       {/* Subtle paper texture background */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 dark:opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -48,10 +48,10 @@ export function JoinRoomPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md mx-4">
-        <div className="border-4 border-fascist-red bg-white p-8 shadow-2xl">
+        <div className="border-4 border-fascist-red bg-white p-8 shadow-2xl dark:bg-card dark:border-red-500/50">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-fascist-red border-2 border-noir-black rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-fascist-red border-2 border-noir-black rounded-full flex items-center justify-center mx-auto mb-4 dark:border-white/20">
               <span className="text-white font-bold text-2xl">🔑</span>
             </div>
 
@@ -59,7 +59,7 @@ export function JoinRoomPage() {
               JOIN ROOM
             </h2>
 
-            <p className="font-courier text-sm text-noir-black/70">
+            <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
               Enter the room code provided by your friend
             </p>
           </div>
@@ -69,7 +69,7 @@ export function JoinRoomPage() {
             <div>
               <label
                 htmlFor="roomCode"
-                className="block font-courier text-sm font-bold mb-3"
+                className="block font-courier text-sm font-bold mb-3 dark:text-white"
               >
                 ROOM CODE:
               </label>
@@ -79,12 +79,12 @@ export function JoinRoomPage() {
                 value={roomCode}
                 onChange={handleInputChange}
                 placeholder="ABC123"
-                className="border-2 border-noir-black font-courier text-center text-lg tracking-widest font-bold"
+                className="border-2 border-noir-black font-courier text-center text-lg tracking-widest font-bold dark:border-white/20 dark:bg-card-foreground/5 dark:text-white"
                 maxLength={6}
                 required
                 disabled={loading || isJoining}
               />
-              <p className="font-courier text-xs text-noir-black/60 mt-2">
+              <p className="font-courier text-xs text-noir-black/60 mt-2 dark:text-white/60">
                 Enter the 4-6 character room code
               </p>
             </div>
@@ -102,7 +102,7 @@ export function JoinRoomPage() {
             <Button
               type="submit"
               disabled={!roomCode.trim() || loading || isJoining}
-              className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white font-bold px-6 py-4 border-2 border-noir-black transition-colors"
+              className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white font-bold px-6 py-4 border-2 border-noir-black transition-colors dark:border-white/20"
             >
               {loading || isJoining ? (
                 <div className="flex items-center justify-center space-x-2">
@@ -116,8 +116,8 @@ export function JoinRoomPage() {
           </form>
 
           {/* Help Text */}
-          <div className="mt-6 pt-4 border-t-2 border-noir-black">
-            <p className="font-courier text-xs text-noir-black/60 text-center">
+          <div className="mt-6 pt-4 border-t-2 border-noir-black dark:border-white/20">
+            <p className="font-courier text-xs text-noir-black/60 text-center dark:text-white/60">
               Ask your friend for the room code
               <br />
               Room codes are 4-6 characters long

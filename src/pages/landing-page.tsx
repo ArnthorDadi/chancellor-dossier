@@ -9,9 +9,9 @@ export function LandingPage() {
   const { createRoom, loading: createLoading } = useCreateRoom();
 
   return (
-    <div className="min-h-screen bg-parchment-bg text-noir-black">
+    <div className="min-h-screen bg-parchment-bg text-noir-black dark:bg-background dark:text-white">
       {/* Subtle paper texture background */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 dark:opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -35,8 +35,8 @@ export function LandingPage() {
               <div className="absolute z-10 top-0 left-1/2 transform -translate-x-1/2 -translate-y-2 w-24 h-4 bg-yellow-400/80 border border-noir-black shadow-md"></div>
 
               {/* Main dossier */}
-              <div className="border-4 border-noir-black bg-vintage-cream p-1 shadow-2xl transform rotate-1">
-                <div className="border-2 border-noir-black bg-white p-8">
+              <div className="border-4 border-noir-black bg-vintage-cream p-1 shadow-2xl transform rotate-1 dark:bg-card dark:border-white/20">
+                <div className="border-2 border-noir-black bg-white p-8 dark:bg-card-foreground/5 dark:border-white/20">
                   {/* Header with classified stamp */}
                   <div className="mb-6">
                     <div className="flex items-center justify-center mb-4">
@@ -57,7 +57,7 @@ export function LandingPage() {
                       </h3>
                     </div>
 
-                    <p className="font-courier text-sm text-noir-black/70 mb-6">
+                    <p className="font-courier text-sm text-noir-black/70 mb-6 dark:text-white/70">
                       Agent, select your operation to begin
                     </p>
                   </div>
@@ -77,7 +77,7 @@ export function LandingPage() {
                             }
                           }}
                           disabled={createLoading}
-                          className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-6 py-3 border-2 border-noir-black transition-colors"
+                          className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-6 py-3 border-2 border-noir-black transition-colors dark:border-white/20"
                         >
                           {createLoading ? (
                             <div className="flex items-center justify-center space-x-2">
@@ -101,7 +101,7 @@ export function LandingPage() {
                         >
                           <Button
                             size="lg"
-                            className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black transition-colors"
+                            className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black transition-colors dark:border-white/20"
                           >
                             CREATE A ROOM
                           </Button>
@@ -117,8 +117,7 @@ export function LandingPage() {
                       >
                         <Button
                           size="lg"
-                          variant="outline"
-                          className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white font-bold px-6 py-3 border-2 border-noir-black transition-colors"
+                          className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white font-bold px-6 py-3 border-2 border-noir-black transition-colors dark:border-white/20"
                         >
                           <div className="flex items-center justify-center space-x-2">
                             <span>🕵️</span>
@@ -134,23 +133,23 @@ export function LandingPage() {
                   </div>
 
                   {/* Status footer */}
-                  <div className="mt-6 pt-4 border-t-2 border-noir-black">
+                  <div className="mt-6 pt-4 border-t-2 border-noir-black dark:border-white/20">
                     <div className="flex items-center justify-between">
                       <div className="text-left">
-                        <p className="font-courier text-xs text-noir-black/60">
+                        <p className="font-courier text-xs text-noir-black/60 dark:text-white/60">
                           STATUS:
                         </p>
-                        <p className="font-courier text-xs font-bold text-liberal-blue">
+                        <p className="font-courier text-xs font-bold text-liberal-blue dark:text-blue-300">
                           {user
                             ? "AGENT AUTHENTICATED"
                             : "AUTHENTICATION REQUIRED"}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-courier text-xs text-noir-black/60">
+                        <p className="font-courier text-xs text-noir-black/60 dark:text-white/60">
                           CLEARANCE:
                         </p>
-                        <p className="font-courier text-xs font-bold text-fascist-red">
+                        <p className="font-courier text-xs font-bold text-fascist-red dark:text-red-400">
                           {user ? "LEVEL 5 - TOP SECRET" : "PENDING"}
                         </p>
                       </div>
@@ -164,9 +163,11 @@ export function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-8 items-center mb-16">
             {/* Right - Game Info */}
             <div className="space-y-6">
-              <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
-                <h2 className="font-bold text-2xl mb-4">ABOUT THE GAME</h2>
-                <div className="space-y-4 text-sm">
+              <div className="border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20">
+                <h2 className="font-bold text-2xl mb-4 dark:text-white">
+                  ABOUT THE GAME
+                </h2>
+                <div className="space-y-4 text-sm dark:text-white/80">
                   <p>
                     A social deduction game for 5-10 players about finding and
                     stopping the secret Hitler.
@@ -184,8 +185,8 @@ export function LandingPage() {
               </div>
 
               {/* Party Icons - Inspired by actual game design */}
-              <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
-                <h3 className="font-bold text-xl mb-4 text-center">
+              <div className="border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20">
+                <h3 className="font-bold text-xl mb-4 text-center dark:text-white">
                   PARTY MEMBERSHIP
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -210,12 +211,12 @@ export function LandingPage() {
         </section>
 
         {/* Footer - Simple Game Style */}
-        <footer className="border-t-8 border-noir-black bg-white py-6">
+        <footer className="border-t-8 border-noir-black bg-white py-6 dark:bg-card dark:border-white/20">
           <div className="container mx-auto px-4 text-center">
-            <div className="text-sm font-bold mb-2">
+            <div className="text-sm font-bold mb-2 dark:text-white">
               CHANCELLOR DOSSIER v1.8.0
             </div>
-            <div className="text-xs text-noir-black/60">
+            <div className="text-xs text-noir-black/60 dark:text-white/60">
               Digital envelope system for Secret Hitler board game
             </div>
           </div>

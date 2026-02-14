@@ -18,10 +18,12 @@ export function RoomLobbyPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-parchment-bg">
-        <div className="border-4 border-noir-black bg-white p-8 shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-parchment-bg dark:bg-background">
+        <div className="border-4 border-noir-black bg-white p-8 shadow-2xl dark:bg-card dark:border-white/20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-liberal-blue mx-auto"></div>
-          <p className="mt-4 font-courier text-sm">Loading room...</p>
+          <p className="mt-4 font-courier text-sm dark:text-white">
+            Loading room...
+          </p>
         </div>
       </div>
     );
@@ -29,18 +31,18 @@ export function RoomLobbyPage() {
 
   if (error || !room) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-parchment-bg">
-        <div className="border-4 border-fascist-red bg-white p-8 shadow-2xl max-w-md mx-4">
+      <div className="min-h-screen flex items-center justify-center bg-parchment-bg dark:bg-background">
+        <div className="border-4 border-fascist-red bg-white p-8 shadow-2xl max-w-md mx-4 dark:bg-card dark:border-red-500/50">
           <h2 className="font-special-elite text-xl text-fascist-red mb-4 text-center">
             ROOM NOT FOUND
           </h2>
-          <p className="font-courier text-sm text-noir-black/70 mb-6 text-center">
+          <p className="font-courier text-sm text-noir-black/70 mb-6 text-center dark:text-white/70">
             {error ||
               "The room could not be found. Please check the room code and try again."}
           </p>
           <Button
             onClick={() => navigate("/")}
-            className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold border-2 border-noir-black"
+            className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold border-2 border-noir-black dark:border-white/20"
           >
             BACK TO HOME
           </Button>
@@ -55,9 +57,9 @@ export function RoomLobbyPage() {
   const canStartGame = playerCount >= 5 && players.every((p) => p.isReady);
 
   return (
-    <div className="min-h-screen bg-parchment-bg text-noir-black">
+    <div className="min-h-screen bg-parchment-bg text-noir-black dark:bg-background dark:text-white">
       {/* Subtle paper texture background */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 dark:opacity-10">
         <div
           className="absolute inset-0"
           style={{
@@ -78,11 +80,13 @@ export function RoomLobbyPage() {
             <PlayerList roomId={roomId} />
 
             {/* Game Controls */}
-            <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
+            <div className="border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20">
               <div className="text-center space-y-4">
                 {isAdmin ? (
                   <>
-                    <h3 className="font-bold text-lg">GAME CONTROLS</h3>
+                    <h3 className="font-bold text-lg dark:text-white">
+                      GAME CONTROLS
+                    </h3>
                     {playerCount < 5 ? (
                       <div className="border-2 border-fascist-red bg-fascist-red/10 p-4">
                         <p className="font-courier text-sm text-fascist-red">
@@ -91,15 +95,15 @@ export function RoomLobbyPage() {
                         </p>
                       </div>
                     ) : !canStartGame ? (
-                      <div className="border-2 border-yellow-400 bg-yellow-100 p-4">
-                        <p className="font-courier text-sm text-yellow-800">
+                      <div className="border-2 border-yellow-400 bg-yellow-100 p-4 dark:bg-yellow-900/30 dark:border-yellow-500">
+                        <p className="font-courier text-sm text-yellow-800 dark:text-yellow-200">
                           Waiting for all players to be ready...
                         </p>
                       </div>
                     ) : (
                       <Button
                         onClick={handleStartGame}
-                        className="bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black"
+                        className="bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black dark:border-white/20"
                       >
                         START GAME
                       </Button>
@@ -107,8 +111,10 @@ export function RoomLobbyPage() {
                   </>
                 ) : (
                   <>
-                    <h3 className="font-bold text-lg">WAITING FOR ADMIN</h3>
-                    <p className="font-courier text-sm text-noir-black/70">
+                    <h3 className="font-bold text-lg dark:text-white">
+                      WAITING FOR ADMIN
+                    </h3>
+                    <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
                       The room admin will start the game when ready
                     </p>
                     {playerCount < 5 && (
@@ -127,8 +133,7 @@ export function RoomLobbyPage() {
             {/* Leave Room */}
             <Button
               onClick={() => navigate("/")}
-              variant="outline"
-              className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black font-courier py-6 text-lg"
+              className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black font-courier py-6 text-lg dark:border-white/20"
             >
               🚪 LEAVE ROOM
             </Button>

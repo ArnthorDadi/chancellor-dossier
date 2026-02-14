@@ -19,12 +19,12 @@ export function InvestigationResult({
   });
 
   return (
-    <div className="border-4 border-noir-black bg-white p-6 shadow-2xl">
+    <div className="border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20">
       <div className="text-center mb-6">
-        <h2 className="font-special-elite text-2xl text-liberal-blue mb-2">
+        <h2 className="font-special-elite text-2xl text-liberal-blue mb-2 dark:text-blue-300">
           INVESTIGATION COMPLETE
         </h2>
-        <p className="font-courier text-sm text-noir-black/70">
+        <p className="font-courier text-sm text-noir-black/70 dark:text-white/70">
           Your agents have gathered intelligence on the suspect
         </p>
       </div>
@@ -48,7 +48,7 @@ export function InvestigationResult({
           {targetName.slice(0, 2).toUpperCase()}
         </div>
 
-        <h3 className="font-bold text-xl mb-2">{targetName}</h3>
+        <h3 className="font-bold text-xl mb-2 dark:text-white">{targetName}</h3>
 
         <div
           className={`
@@ -60,8 +60,8 @@ export function InvestigationResult({
         </div>
       </div>
 
-      <div className="p-4 border-2 border-noir-black/20 bg-vintage-cream rounded-lg">
-        <p className="font-courier text-xs text-noir-black/70 text-center">
+      <div className="p-4 border-2 border-noir-black/20 bg-vintage-cream rounded-lg dark:bg-card-foreground/5 dark:border-white/20">
+        <p className="font-courier text-xs text-noir-black/70 text-center dark:text-white/70">
           CONFIDENTIAL - For your eyes only
           <br />
           Investigated at {timeString}

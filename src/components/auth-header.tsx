@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 interface AuthHeaderProps {
@@ -34,7 +35,7 @@ export function AuthHeader({ className }: AuthHeaderProps) {
 
   return (
     <div
-      className={`sticky top-0 z-50 border-b-4 border-noir-black bg-white/90 backdrop-blur-sm shadow-lg ${className}`}
+      className={`sticky top-0 z-50 border-b-4 border-noir-black bg-white/90 backdrop-blur-sm shadow-lg dark:bg-card/90 dark:border-white/10 ${className}`}
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
@@ -46,12 +47,14 @@ export function AuthHeader({ className }: AuthHeaderProps) {
               }`}
             ></div>
             <div className="hidden sm:block">
-              <p className="font-courier text-xs text-noir-black/60 uppercase tracking-wider">
+              <p className="font-courier text-xs text-noir-black/60 uppercase tracking-wider dark:text-white/60">
                 Status:
               </p>
               <p
                 className={`font-special-elite text-sm font-bold ${
-                  user ? "text-liberal-blue" : "text-fascist-red"
+                  user
+                    ? "text-liberal-blue dark:text-blue-300"
+                    : "text-fascist-red"
                 }`}
               >
                 {user ? getUserDisplay() : "AUTHENTICATION REQUIRED"}
@@ -60,8 +63,10 @@ export function AuthHeader({ className }: AuthHeaderProps) {
             {/* Mobile status */}
             <div className="sm:hidden">
               <p
-                className={`font-courier text-xs font-bold uppercase tracking-wider ${
-                  user ? "text-liberal-blue" : "text-fascist-red"
+                className={`font-courier text-xs font-bold uppercase tracking-wider dark:text-white/60 ${
+                  user
+                    ? "text-liberal-blue dark:text-blue-300"
+                    : "text-fascist-red"
                 }`}
               >
                 {user ? getUserDisplay() : "LOGIN REQUIRED"}
@@ -71,10 +76,11 @@ export function AuthHeader({ className }: AuthHeaderProps) {
 
           {/* Right side - Action Buttons */}
           <div className="flex items-center space-x-2">
+            <ThemeToggle />
             {loading ? (
               <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-liberal-blue"></div>
-                <span className="font-courier text-xs text-noir-black/60">
+                <span className="font-courier text-xs text-noir-black/60 dark:text-white/60">
                   Loading...
                 </span>
               </div>
@@ -84,9 +90,8 @@ export function AuthHeader({ className }: AuthHeaderProps) {
                 {user ? (
                   <Button
                     onClick={handleSignOut}
-                    variant="outline"
                     disabled={isSigningOut}
-                    className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black font-courier text-sm"
+                    className="bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black font-courier text-sm dark:border-white/20"
                     size="sm"
                   >
                     {isSigningOut ? (
