@@ -83,6 +83,7 @@ export function JoinRoomPage() {
                 maxLength={6}
                 required
                 disabled={loading || isJoining}
+                autoFocus
               />
               <p className="font-courier text-xs text-noir-black/60 mt-2 dark:text-white/60">
                 Enter the 4-6 character room code

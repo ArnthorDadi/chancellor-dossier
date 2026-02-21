@@ -9,7 +9,7 @@ import {
   getRoom,
   addPlayerToRoom,
   removePlayer,
-  updateRoomMetadata,
+  updateRoom,
   initializeRoomSchema,
   validateRoomSchema,
 } from "@/lib/realtime-database";
@@ -99,9 +99,7 @@ describe("Realtime Database", () => {
   describe("dbPaths", () => {
     it("should generate correct paths", () => {
       expect(dbPaths.room("TEST1")).toBe("rooms/TEST1");
-      expect(dbPaths.roomMetadata("TEST1")).toBe("rooms/TEST1/metadata");
       expect(dbPaths.roomPlayers("TEST1")).toBe("rooms/TEST1/players");
-      expect(dbPaths.roomRoles("TEST1")).toBe("rooms/TEST1/roles");
       expect(dbPaths.roomInvestigations("TEST1")).toBe(
         "rooms/TEST1/investigations"
       );
@@ -188,15 +186,15 @@ describe("Realtime Database", () => {
       });
     });
 
-    it("should update room metadata", async () => {
+    it("should update room data", async () => {
       const { update } = await import("firebase/database");
-      const metadata = { status: "ROLE_REVEAL" };
+      const roomData = { status: "ROLE_REVEAL" };
 
-      await updateRoomMetadata("TEST1", metadata);
+      await updateRoom("TEST1", roomData);
 
       expect(update).toHaveBeenCalledWith(
-        { ref: "rooms/TEST1/metadata" },
-        metadata
+        { ref: "rooms/TEST1" },
+        roomData
       );
     });
   });
@@ -204,43 +202,29 @@ describe("Realtime Database", () => {
   describe("initializeRoomSchema", () => {
     it("should initialize room with default schema", async () => {
       const { set } = await import("firebase/database");
-      const adminId = "admin123";
 
-      await initializeRoomSchema("TEST1", adminId);
+      await initializeRoomSchema("TEST1");
 
       expect(set).toHaveBeenCalledWith(
         { ref: "rooms/TEST1" },
         expect.objectContaining({
-          metadata: expect.objectContaining({
-            status: "LOBBY",
-            adminId,
-            createdAt: expect.any(String),
-            roomName: "Room TEST1",
-            enactedLiberalPolicies: 0,
-            enactedFascistPolicies: 0,
-            electionTracker: 0,
-            startingPlayerId: null,
-          }),
+          status: "LOBBY",
+          createdAt: expect.any(Number),
           players: {},
-          roles: {},
           investigations: {},
         })
       );
     });
 
-    it("should initialize room with custom name", async () => {
+    it("should initialize room schema", async () => {
       const { set } = await import("firebase/database");
-      const adminId = "admin123";
-      const roomName = "Custom Room Name";
 
-      await initializeRoomSchema("TEST1", adminId, roomName);
+      await initializeRoomSchema("TEST1");
 
       expect(set).toHaveBeenCalledWith(
         { ref: "rooms/TEST1" },
         expect.objectContaining({
-          metadata: expect.objectContaining({
-            roomName,
-          }),
+          status: "LOBBY",
         })
       );
     });
@@ -284,13 +268,9 @@ describe("Realtime Database", () => {
     it("should return false for invalid metadata", async () => {
       const { get } = await import("firebase/database");
       const mockRoom = {
-        metadata: {
-          status: "LOBBY",
-          adminId: "admin123",
-          // Missing createdAt and roomName
-        },
+        status: "LOBBY",
+        // Missing createdAt
         players: {},
-        roles: {},
         investigations: {},
       };
       vi.mocked(get).mockResolvedValue({

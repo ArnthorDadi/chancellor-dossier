@@ -6,6 +6,7 @@ import {
   update,
   remove,
   onValue,
+  onDisconnect,
 } from "firebase/database";
 import { initializeApp } from "firebase/app";
 
@@ -78,14 +79,10 @@ export const generateUniqueRoomCode = async (): Promise<string> => {
  */
 export const dbPaths = {
   room: (roomId: string) => `rooms/${roomId}`,
-  roomMetadata: (roomId: string) => `rooms/${roomId}/metadata`,
   roomPlayers: (roomId: string) => `rooms/${roomId}/players`,
-  roomRoles: (roomId: string) => `rooms/${roomId}/roles`,
   roomInvestigations: (roomId: string) => `rooms/${roomId}/investigations`,
   player: (roomId: string, playerId: string) =>
     `rooms/${roomId}/players/${playerId}`,
-  role: (roomId: string, playerId: string) =>
-    `rooms/${roomId}/roles/${playerId}`,
   investigation: (roomId: string, targetId: string) =>
     `rooms/${roomId}/investigations/${targetId}`,
 };
@@ -102,61 +99,28 @@ export const subscribeToRoom = (
 };
 
 /**
- * Subscribe to specific room data
- */
-export const subscribeToRoomMetadata = (
-  roomId: string,
-  callback: (metadata: any) => void
-) => {
-  const metadataRef = ref(database, dbPaths.roomMetadata(roomId));
-  return onValue(metadataRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-};
-
-export const subscribeToRoomPlayers = (
-  roomId: string,
-  callback: (players: any) => void
-) => {
-  const playersRef = ref(database, dbPaths.roomPlayers(roomId));
-  return onValue(playersRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-};
-
-export const subscribeToRoomRoles = (
-  roomId: string,
-  callback: (roles: any) => void
-) => {
-  const rolesRef = ref(database, dbPaths.roomRoles(roomId));
-  return onValue(rolesRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-};
-
-/**
  * Set data operations
  */
 export const createRoom = async (
   roomId: string,
-  roomData: any
+  roomData: Record<string, unknown>
 ): Promise<void> => {
   const roomRef = ref(database, dbPaths.room(roomId));
   await set(roomRef, roomData);
 };
 
-export const updateRoomMetadata = async (
+export const updateRoom = async (
   roomId: string,
-  metadata: any
+  roomData: Record<string, unknown>
 ): Promise<void> => {
-  const metadataRef = ref(database, dbPaths.roomMetadata(roomId));
-  await update(metadataRef, metadata);
+  const roomRef = ref(database, dbPaths.room(roomId));
+  await update(roomRef, roomData);
 };
 
 export const updatePlayer = async (
   roomId: string,
   playerId: string,
-  playerData: any
+  playerData: Record<string, unknown>
 ): Promise<void> => {
   const playerRef = ref(database, dbPaths.player(roomId, playerId));
   await update(playerRef, playerData);
@@ -165,24 +129,28 @@ export const updatePlayer = async (
 export const addPlayerToRoom = async (
   roomId: string,
   playerId: string,
-  playerData: any
+  playerData: Record<string, unknown>
 ): Promise<void> => {
   const playerRef = ref(database, dbPaths.player(roomId, playerId));
   await set(playerRef, playerData);
 };
 
-export const assignRoles = async (
+/**
+ * Setup automatic player removal on disconnect
+ * This ensures players are removed from rooms when they lose connection
+ */
+export const setupPlayerDisconnectHandler = async (
   roomId: string,
-  roles: Record<string, any>
+  playerId: string
 ): Promise<void> => {
-  const rolesRef = ref(database, dbPaths.roomRoles(roomId));
-  await set(rolesRef, roles);
+  const playerRef = ref(database, dbPaths.player(roomId, playerId));
+  await onDisconnect(playerRef).remove();
 };
 
 export const storeInvestigation = async (
   roomId: string,
   targetId: string,
-  investigationData: any
+  investigationData: Record<string, unknown>
 ): Promise<void> => {
   const investigationRef = ref(
     database,
@@ -197,24 +165,17 @@ export const storeInvestigation = async (
 export const getRoom = async (roomId: string) => {
   const roomRef = ref(database, dbPaths.room(roomId));
   const snapshot = await get(roomRef);
-  return snapshot.exists() ? snapshot.val() : null;
+  if (!snapshot.exists()) return null;
+
+  const roomData = snapshot.val();
+  // Add the room ID to the data since Firebase doesn't include it
+  return { ...roomData, id: roomId };
 };
 
-export const getRoomMetadata = async (roomId: string) => {
-  const metadataRef = ref(database, dbPaths.roomMetadata(roomId));
-  const snapshot = await get(metadataRef);
-  return snapshot.exists() ? snapshot.val() : null;
-};
 
 export const getRoomPlayers = async (roomId: string) => {
   const playersRef = ref(database, dbPaths.roomPlayers(roomId));
   const snapshot = await get(playersRef);
-  return snapshot.exists() ? snapshot.val() : {};
-};
-
-export const getRoomRoles = async (roomId: string) => {
-  const rolesRef = ref(database, dbPaths.roomRoles(roomId));
-  const snapshot = await get(rolesRef);
   return snapshot.exists() ? snapshot.val() : {};
 };
 
@@ -225,8 +186,20 @@ export const removePlayer = async (
   roomId: string,
   playerId: string
 ): Promise<void> => {
-  const playerRef = ref(database, dbPaths.player(roomId, playerId));
+  const playerPath = dbPaths.player(roomId, playerId);
+  console.log(`🗑️ removePlayer: Removing player at path: ${playerPath}`);
+  const playerRef = ref(database, playerPath);
+  console.log("test - removePlayer", {
+    roomId,
+    playerId,
+    playerPath,
+    playerRef,
+  });
+
   await remove(playerRef);
+  console.log(
+    `✅ removePlayer: Player removed successfully from ${playerPath}`
+  );
 };
 
 export const deleteRoom = async (roomId: string): Promise<void> => {
@@ -238,23 +211,12 @@ export const deleteRoom = async (roomId: string): Promise<void> => {
  * Initialize database schema for a new room
  */
 export const initializeRoomSchema = async (
-  roomId: string,
-  adminId: string,
-  roomName?: string
+  roomId: string
 ): Promise<void> => {
   const roomSchema = {
-    metadata: {
-      status: "LOBBY",
-      adminId,
-      createdAt: new Date().toISOString(),
-      roomName: roomName || `Room ${roomId}`,
-      enactedLiberalPolicies: 0,
-      enactedFascistPolicies: 0,
-      electionTracker: 0,
-      startingPlayerId: null,
-    },
+    status: "LOBBY",
+    createdAt: Date.now(),
     players: {},
-    roles: {},
     investigations: {},
   };
 
@@ -268,21 +230,18 @@ export const validateRoomSchema = async (roomId: string): Promise<boolean> => {
   const room = await getRoom(roomId);
   if (!room) return false;
 
-  const { metadata, players, roles, investigations } = room;
+  const { players, investigations } = room;
 
-  // Check required metadata fields
-  const requiredMetadataFields = ["status", "adminId", "createdAt", "roomName"];
-  const hasValidMetadata =
-    metadata &&
-    requiredMetadataFields.every(
-      (field) => metadata[field] !== undefined && metadata[field] !== null
-    );
+  // Check required fields
+  const requiredFields = ["status", "createdAt"];
+  const hasValidFields = requiredFields.every(
+    (field) => room[field] !== undefined && room[field] !== null
+  );
 
   // Check that all required sections exist
   return (
-    hasValidMetadata &&
+    hasValidFields &&
     typeof players === "object" &&
-    typeof roles === "object" &&
     typeof investigations === "object"
   );
 };
@@ -291,26 +250,21 @@ export const validateRoomSchema = async (roomId: string): Promise<boolean> => {
  * Reset room for new game
  */
 export const resetRoom = async (roomId: string): Promise<void> => {
-  const updates: any = {
-    [dbPaths.roomMetadata(roomId)]: {
-      status: "LOBBY",
-      enactedLiberalPolicies: 0,
-      enactedFascistPolicies: 0,
-      electionTracker: 0,
-    },
-  };
+  const updates: Record<string, unknown> = {};
 
-  // Clear roles and investigations
-  updates[dbPaths.roomRoles(roomId)] = null;
-  updates[dbPaths.roomInvestigations(roomId)] = null;
+  // Update room fields
+  updates["status"] = "LOBBY";
+  updates["startedAt"] = null;
+  updates["endedAt"] = null;
+  updates["currentChancellorId"] = null;
 
-  // Reset player game states
+  // Clear investigations
+  updates["investigations"] = null;
+
+  // Reset player game states (clear roles)
   const players = await getRoomPlayers(roomId);
   Object.keys(players || {}).forEach((playerId) => {
-    updates[dbPaths.player(roomId, playerId)] = {
-      ...players[playerId],
-      isReady: false,
-    };
+    updates[`players/${playerId}/role`] = null;
   });
 
   const roomRef = ref(database, dbPaths.room(roomId));

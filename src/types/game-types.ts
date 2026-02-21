@@ -13,8 +13,8 @@ export interface Player {
   id: string;
   name: string;
   avatar?: string;
-  isReady: boolean;
   joinedAt: number;
+  role?: Role;
 }
 
 export interface GamePlayer extends Player {
@@ -23,25 +23,14 @@ export interface GamePlayer extends Player {
   isAlive: boolean;
 }
 
-export interface RoomMetadata {
+export interface Room {
+  id: string;
   status: GameStatus;
-  adminId: string;
   createdAt: number;
   startedAt?: number;
   endedAt?: number;
-  startingPlayerId?: string;
-  currentPresidentId?: string;
   currentChancellorId?: string;
-  enactedLiberalPolicies: number;
-  enactedFascistPolicies: number;
-  electionTracker: number;
-}
-
-export interface Room {
-  id: string;
-  metadata: RoomMetadata;
   players: Record<string, Player>;
-  roles?: Record<string, Role>; // Secret data, only accessible to specific players
   investigations?: Record<string, InvestigationResultData>; // President-only access
 }
 

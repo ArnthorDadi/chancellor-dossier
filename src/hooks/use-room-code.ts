@@ -170,7 +170,7 @@ export const useJoinRoom = (): UseJoinRoomReturn => {
         }
 
         // Check if room is in lobby status
-        if (room.metadata?.status !== "LOBBY") {
+        if (room.status !== "LOBBY") {
           throw new Error("Cannot join room. Game has already started.");
         }
 

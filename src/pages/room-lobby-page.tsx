@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { PlayerList } from "@/components/player-list";
 import { RoomCodeDisplay } from "@/components/room-code-display";
 import { Button } from "@/components/ui/button";
@@ -9,11 +10,37 @@ export function RoomLobbyPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { room, loading, error } = useRoom(roomId);
+  const { room, loading, error, leaveRoom, startGame } = useRoom(roomId);
 
-  const handleStartGame = () => {
-    // This will be implemented later
-    console.log("Start game clicked");
+  // Redirect to game page when game starts
+  useEffect(() => {
+    if (room && room.status !== "LOBBY") {
+      navigate(`/room/${roomId}/game`);
+    }
+  }, [room, roomId, navigate]);
+
+  const handleStartGame = async () => {
+    try {
+      await startGame();
+      console.log("Game started successfully");
+    } catch (err) {
+      console.error("Failed to start game:", err);
+      // Error is already handled by the useRoom hook
+    }
+  };
+
+  const handleLeaveRoom = async () => {
+    console.log("🚪 handleLeaveRoom called");
+    try {
+      console.log("🚪 Calling leaveRoom()...");
+      await leaveRoom();
+      console.log("🚪 leaveRoom() completed successfully");
+      navigate("/");
+    } catch (err) {
+      console.error("❌ Failed to leave room:", err);
+      // Navigate anyway to prevent user being stuck
+      navigate("/");
+    }
   };
 
   if (loading) {
@@ -53,8 +80,11 @@ export function RoomLobbyPage() {
 
   const players = Object.values(room.players || {});
   const playerCount = players.length;
-  const isAdmin = user?.uid === room.metadata?.adminId;
-  const canStartGame = playerCount >= 5 && players.every((p) => p.isReady);
+
+  // Admin is the first player in the room
+  const playerIds = Object.keys(room.players || {});
+  const adminId = playerIds.length > 0 ? playerIds[0] : null;
+  const isAdmin = user?.uid === adminId;
 
   return (
     <div className="min-h-screen bg-parchment-bg text-noir-black dark:bg-background dark:text-white">
@@ -94,12 +124,6 @@ export function RoomLobbyPage() {
                           {playerCount})
                         </p>
                       </div>
-                    ) : !canStartGame ? (
-                      <div className="border-2 border-yellow-400 bg-yellow-100 p-4 dark:bg-yellow-900/30 dark:border-yellow-500">
-                        <p className="font-courier text-sm text-yellow-800 dark:text-yellow-200">
-                          Waiting for all players to be ready...
-                        </p>
-                      </div>
                     ) : (
                       <Button
                         onClick={handleStartGame}
@@ -132,7 +156,7 @@ export function RoomLobbyPage() {
 
             {/* Leave Room */}
             <Button
-              onClick={() => navigate("/")}
+              onClick={handleLeaveRoom}
               className="w-full bg-fascist-red hover:bg-fascist-red/90 text-white border-2 border-noir-black font-courier py-6 text-lg dark:border-white/20"
             >
               🚪 LEAVE ROOM

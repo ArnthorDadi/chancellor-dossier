@@ -29,7 +29,10 @@ export function AdminControlPanel({
   const [targetPlayer, setTargetPlayer] = useState<Player | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const isAdmin = user?.uid === room.metadata?.adminId;
+  // Admin is the first player in the room
+  const playerIds = Object.keys(room.players || {});
+  const adminId = playerIds.length > 0 ? playerIds[0] : null;
+  const isAdmin = user?.uid === adminId;
   const players = Object.values(room.players || {});
   const playerCount = players.length;
   const canStartGame = playerCount >= 5;
@@ -140,7 +143,7 @@ export function AdminControlPanel({
             </p>
             <p className="font-courier text-xs">
               <span className="font-bold">Status:</span>{" "}
-              {room.metadata?.status || "UNKNOWN"}
+              {room.status || "UNKNOWN"}
             </p>
             <p className="font-courier text-xs">
               <span className="font-bold">Can Start:</span>{" "}
@@ -164,9 +167,9 @@ export function AdminControlPanel({
             <Button
               onClick={handleStartGameClick}
               className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black text-lg"
-              disabled={room.metadata?.status !== "LOBBY"}
+              disabled={room.status !== "LOBBY"}
             >
-              {room.metadata?.status === "LOBBY"
+              {room.status === "LOBBY"
                 ? "START GAME"
                 : "GAME IN PROGRESS"}
             </Button>

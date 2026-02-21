@@ -19,14 +19,8 @@ describe("useRoom Hook", () => {
   const mockUser = { uid: "user123" };
   const mockRoom: Room = {
     id: "TEST1",
-    metadata: {
-      status: "LOBBY" as const,
-      adminId: "user123",
-      createdAt: Date.now(),
-      enactedLiberalPolicies: 0,
-      enactedFascistPolicies: 0,
-      electionTracker: 0,
-    },
+    status: "LOBBY" as const,
+    createdAt: Date.now(),
     players: {
       user123: {
         id: "user123",
@@ -53,7 +47,7 @@ describe("useRoom Hook", () => {
     mockRealtimeDb.getRoom.mockResolvedValue(mockRoom);
     mockRealtimeDb.addPlayerToRoom.mockResolvedValue();
     mockRealtimeDb.removePlayer.mockResolvedValue();
-    mockRealtimeDb.updateRoomMetadata.mockResolvedValue();
+    mockRealtimeDb.updateRoom.mockResolvedValue();
     mockRealtimeDb.deleteRoom.mockResolvedValue();
     mockRealtimeDb.resetRoom.mockResolvedValue();
     mockRealtimeDb.assignRoles.mockResolvedValue();
@@ -156,7 +150,7 @@ describe("useRoom Hook", () => {
     it("should throw error if game is in progress", async () => {
       mockRealtimeDb.getRoom.mockResolvedValue({
         ...mockRoom,
-        metadata: { ...mockRoom.metadata, status: "VOTING" },
+        status: "VOTING" as const,
       });
 
       const { result } = renderHook(() => useRoom());
@@ -203,7 +197,7 @@ describe("useRoom Hook", () => {
       expect(mockGameLogic.canStartGame).toHaveBeenCalled();
       expect(mockGameLogic.assignRoles).toHaveBeenCalled();
       expect(mockRealtimeDb.assignRoles).toHaveBeenCalled();
-      expect(mockRealtimeDb.updateRoomMetadata).toHaveBeenCalledWith(
+      expect(mockRealtimeDb.updateRoom).toHaveBeenCalledWith(
         "TEST1",
         expect.objectContaining({
           status: "ROLE_REVEAL",
@@ -216,7 +210,15 @@ describe("useRoom Hook", () => {
     it("should throw error if user is not admin", async () => {
       const nonAdminRoom = {
         ...mockRoom,
-        metadata: { ...mockRoom.metadata, adminId: "other-user" },
+        players: {
+          "other-user": {
+            id: "other-user",
+            name: "Other User",
+            isReady: false,
+            joinedAt: Date.now(),
+          },
+          user123: mockRoom.players.user123,
+        },
       };
       mockRealtimeDb.subscribeToRoom.mockImplementation((roomId, callback) => {
         if (roomId === "TEST1") {

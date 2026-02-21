@@ -21,20 +21,12 @@ import { useAuth } from "@/hooks/use-auth";
 
 const createMockRoom = (overrides: Partial<Room> = {}): Room => ({
   id: "room123",
-  metadata: {
-    status: "LOBBY",
-    adminId: "admin-user-id",
-    createdAt: Date.now(),
-    startedAt: undefined,
-    endedAt: undefined,
-    startingPlayerId: undefined,
-    currentPresidentId: undefined,
-    currentChancellorId: undefined,
-    enactedLiberalPolicies: 0,
-    enactedFascistPolicies: 0,
-    electionTracker: 0,
-    ...overrides.metadata,
-  },
+  status: "LOBBY",
+  createdAt: Date.now(),
+  startedAt: undefined,
+  endedAt: undefined,
+  currentChancellorId: undefined,
+  ...overrides,
   players: {
     "admin-user-id": {
       id: "admin-user-id",

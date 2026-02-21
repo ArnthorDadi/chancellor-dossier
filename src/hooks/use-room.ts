@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   generateUniqueRoomCode,
   createRoom,
@@ -6,12 +6,12 @@ import {
   addPlayerToRoom,
   removePlayer,
   updatePlayer,
-  updateRoomMetadata,
+  updateRoom,
   deleteRoom,
   resetRoom,
-  assignRoles,
   storeInvestigation,
   subscribeToRoom,
+  setupPlayerDisconnectHandler,
 } from "@/lib/realtime-database";
 import type { Room } from "@/types/game-types";
 import {
@@ -43,7 +43,6 @@ export interface UseRoomReturn {
   setStartingPlayer: (playerId: string) => Promise<void>;
 
   // Player functions
-  setPlayerReady: (ready: boolean) => Promise<void>;
   updatePlayerName: (name: string) => Promise<void>;
 
   // Investigation functions
@@ -58,25 +57,80 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
   const [room, setRoom] = useState<Room | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [subscriptions, setSubscriptions] = useState<(() => void)[]>([]);
+  const subscriptionsRef = useRef<(() => void)[]>([]);
+  const shouldCleanupOnUnmount = useRef<boolean>(true);
+  const currentRoomRef = useRef<Room | null>(null);
+  const currentUserRef = useRef<typeof user>(null);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    currentRoomRef.current = room;
+  }, [room]);
+
+  useEffect(() => {
+    currentUserRef.current = user;
+  }, [user]);
 
   const isPlayerInRoom =
     user && room && room.players ? user.uid in room.players : false;
+
+  // Helper to check if user is admin (first player in the room)
+  const isAdmin = useCallback((): boolean => {
+    if (!room || !user) return false;
+    const playerIds = Object.keys(room.players || {});
+    return playerIds.length > 0 && playerIds[0] === user.uid;
+  }, [room, user]);
+
+  // Cleanup subscriptions
+  const cleanup = useCallback(() => {
+    subscriptionsRef.current.forEach((unsub) => unsub());
+    subscriptionsRef.current = [];
+  }, []);
+
+  // Helper function to remove player and handle room deletion
+  const removePlayerAndCleanup = useCallback(
+    async (targetRoomId: string, playerId: string, roomData: Room) => {
+      console.log("🗑️ Removing player from Firebase...");
+      await removePlayer(targetRoomId, playerId);
+      console.log("✅ Player removed from Firebase");
+
+      // Check if this was the last player
+      const remainingPlayers = Object.entries(roomData.players || {}).filter(
+        ([id]) => id !== playerId
+      );
+      console.log(`📊 Remaining players: ${remainingPlayers.length}`);
+
+      if (remainingPlayers.length === 0) {
+        // Last player, delete the room
+        console.log("🗑️ Last player leaving, deleting room...");
+        await deleteRoom(targetRoomId);
+        console.log("✅ Room deleted");
+      }
+    },
+    []
+  );
 
   // Subscribe to room updates
   const subscribeToRoomUpdates = useCallback((targetRoomId: string) => {
     if (!targetRoomId) return;
 
-    const unsubscribers: (() => void)[] = [];
+    console.log(`📡 Subscribing to room updates: ${targetRoomId}`);
 
     // Subscribe to full room data
     const roomUnsub = subscribeToRoom(targetRoomId, (snapshot) => {
       const roomData = snapshot.val();
-      setRoom(roomData);
+      const playerCount = roomData?.players
+        ? Object.keys(roomData.players).length
+        : 0;
+      console.log(`📡 Room update received for ${targetRoomId}:`, {
+        playerCount,
+        playerIds: roomData?.players ? Object.keys(roomData.players) : [],
+      });
+      // Add the room ID to the data since Firebase doesn't include it
+      setRoom(roomData ? { ...roomData, id: targetRoomId } : null);
     });
-    unsubscribers.push(roomUnsub);
 
-    setSubscriptions((prev) => [...prev, ...unsubscribers]);
+    subscriptionsRef.current.push(roomUnsub);
   }, []);
 
   // Create a new room
@@ -95,19 +149,12 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
 
         const newRoom: Room = {
           id: newRoomId,
-          metadata: {
-            status: "LOBBY",
-            adminId: user.uid,
-            createdAt: now,
-            enactedLiberalPolicies: 0,
-            enactedFascistPolicies: 0,
-            electionTracker: 0,
-          },
+          status: "LOBBY",
+          createdAt: now,
           players: {
             [user.uid]: {
               id: user.uid,
               name: roomName || `Player ${user.uid.slice(-4)}`,
-              isReady: false,
               joinedAt: now,
             },
           },
@@ -115,9 +162,14 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
 
         await createRoom(newRoomId, newRoom);
 
+        // Setup automatic disconnect handler for the creator
+        await setupPlayerDisconnectHandler(newRoomId, user.uid);
+
         // Store current room ID for logout cleanup
         localStorage.setItem(`currentRoom_${user.uid}`, newRoomId);
 
+        // Clean up old subscriptions before subscribing to new room
+        cleanup();
         subscribeToRoomUpdates(newRoomId);
 
         return newRoomId;
@@ -130,7 +182,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         setLoading(false);
       }
     },
-    [user, subscribeToRoomUpdates]
+    [user, subscribeToRoomUpdates, cleanup]
   );
 
   // Join an existing room
@@ -151,7 +203,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         }
 
         // Check if room is full or game in progress
-        if (existingRoom.metadata.status !== "LOBBY") {
+        if (existingRoom.status !== "LOBBY") {
           throw new Error("Cannot join a game in progress");
         }
 
@@ -165,13 +217,17 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         await addPlayerToRoom(targetRoomId, user.uid, {
           id: user.uid,
           name: playerName,
-          isReady: false,
           joinedAt: now,
         });
+
+        // Setup automatic disconnect handler
+        await setupPlayerDisconnectHandler(targetRoomId, user.uid);
 
         // Store current room ID for logout cleanup
         localStorage.setItem(`currentRoom_${user.uid}`, targetRoomId);
 
+        // Clean up old subscriptions before subscribing to new room
+        cleanup();
         subscribeToRoomUpdates(targetRoomId);
       } catch (err) {
         const errorMessage =
@@ -182,40 +238,34 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         setLoading(false);
       }
     },
-    [user, subscribeToRoomUpdates]
+    [user, subscribeToRoomUpdates, cleanup]
   );
 
   // Leave current room
   const leaveRoom = useCallback(async (): Promise<void> => {
-    if (!room || !user) return;
+    console.log("🚪 leaveRoom called", { roomId: room?.id, userId: user?.uid });
+    if (!room || !user) {
+      console.log("❌ leaveRoom: No room or user");
+      return;
+    }
 
     try {
-      await removePlayer(room.id, user.uid);
-
-      // If admin leaves and there are other players, transfer admin
-      if (room.metadata.adminId === user.uid) {
-        const remainingPlayers = Object.entries(room.players || {}).filter(
-          ([id]) => id !== user.uid
-        );
-
-        if (remainingPlayers.length > 0) {
-          const newAdminId = remainingPlayers[0][0];
-          await updateRoomMetadata(room.id, { adminId: newAdminId });
-        } else {
-          // Last player, delete the room
-          await deleteRoom(room.id);
-        }
-      }
+      // Prevent automatic cleanup since we're explicitly leaving
+      shouldCleanupOnUnmount.current = false;
+      console.log("test - leaveRoom", { user, room });
+      await removePlayerAndCleanup(room.id, user.uid, room);
 
       // Clear current room ID from localStorage
       localStorage.removeItem(`currentRoom_${user.uid}`);
+      console.log("✅ leaveRoom completed successfully");
     } catch (err) {
+      console.error("❌ Error in leaveRoom:", err);
       const errorMessage =
         err instanceof Error ? err.message : "Failed to leave room";
       setError(errorMessage);
       throw err;
     }
-  }, [room, user]);
+  }, [room, user, removePlayerAndCleanup]);
 
   // Start the game (admin only)
   const startGame = useCallback(async (): Promise<void> => {
@@ -223,7 +273,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
       throw new Error("No room or user");
     }
 
-    if (room.metadata.adminId !== user.uid) {
+    if (!isAdmin()) {
       throw new Error("Only admin can start the game");
     }
 
@@ -237,15 +287,20 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     try {
       // Assign roles
       const roleAssignment = assignGameRoles(players);
-      await assignRoles(room.id, roleAssignment);
+
+      // Update each player with their assigned role
+      const playerUpdates: Promise<void>[] = [];
+      for (const player of players) {
+        const role = roleAssignment[player.id];
+        playerUpdates.push(updatePlayer(room.id, player.id, { role }));
+      }
+      await Promise.all(playerUpdates);
 
       // Update room status
       const now = Date.now();
-      await updateRoomMetadata(room.id, {
+      await updateRoom(room.id, {
         status: "ROLE_REVEAL",
         startedAt: now,
-        startingPlayerId: players[0].id, // First player as starting president
-        currentPresidentId: players[0].id,
       });
     } catch (err) {
       const errorMessage =
@@ -265,10 +320,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
       }
 
       // Only admin can reset, or if game is over anyone can reset
-      if (
-        room.metadata.adminId !== user.uid &&
-        room.metadata.status !== "GAME_OVER"
-      ) {
+      if (!isAdmin() && room.status !== "GAME_OVER") {
         throw new Error("Only admin can reset the game");
       }
 
@@ -291,7 +343,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         throw new Error("No room or user");
       }
 
-      if (room.metadata.adminId !== user.uid) {
+      if (!isAdmin()) {
         throw new Error("Only admin can remove players");
       }
 
@@ -308,51 +360,19 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         throw err;
       }
     },
-    [room, user]
+    [room, user, isAdmin]
   );
 
-  // Transfer admin to another player
+  // Transfer admin to another player (no-op now since admin is determined by player order)
   const transferAdmin = useCallback(
-    async (playerId: string): Promise<void> => {
-      if (!room || !user) {
-        throw new Error("No room or user");
-      }
-
-      if (room.metadata.adminId !== user.uid) {
-        throw new Error("Only admin can transfer admin rights");
-      }
-
-      if (!room.players[playerId]) {
-        throw new Error("Player not found in room");
-      }
-
-      try {
-        await updateRoomMetadata(room.id, { adminId: playerId });
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to transfer admin";
-        setError(errorMessage);
-        throw err;
-      }
+    async (_playerId: string): Promise<void> => {
+      // Admin is now determined by player order (first player is admin)
+      // This function is kept for backwards compatibility but does nothing
+      console.log(
+        "Admin transfer not needed - admin is determined by player order"
+      );
     },
-    [room, user]
-  );
-
-  // Set player ready status
-  const setPlayerReady = useCallback(
-    async (ready: boolean): Promise<void> => {
-      if (!room || !user) return;
-
-      try {
-        await updatePlayer(room.id, user.uid, { isReady: ready });
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to update ready status";
-        setError(errorMessage);
-        throw err;
-      }
-    },
-    [room, user]
+    []
   );
 
   // Update player name
@@ -372,31 +392,13 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     [room, user]
   );
 
-  // Set starting player (admin only)
+  // Set starting player (admin only) - no-op now
   const setStartingPlayer = useCallback(
-    async (playerId: string): Promise<void> => {
-      if (!room || !user) {
-        throw new Error("No room or user");
-      }
-
-      if (room.metadata.adminId !== user.uid) {
-        throw new Error("Only admin can set the starting player");
-      }
-
-      if (!room.players[playerId]) {
-        throw new Error("Player not found in room");
-      }
-
-      try {
-        await updateRoomMetadata(room.id, { startingPlayerId: playerId });
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to set starting player";
-        setError(errorMessage);
-        throw err;
-      }
+    async (_playerId: string): Promise<void> => {
+      // Starting player logic removed
+      console.log("Starting player setting not needed");
     },
-    [room, user]
+    []
   );
 
   // Investigate player (President only)
@@ -406,10 +408,8 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         throw new Error("No room or user");
       }
 
-      // Validate current player is President
-      if (room.metadata.currentPresidentId !== user.uid) {
-        throw new Error("Only President can investigate players");
-      }
+      // President validation removed - any player can investigate now
+      // TODO: Add proper president tracking if needed
 
       // Check if investigation power is available (President can only investigate once per game)
       const existingInvestigations = room.investigations || {};
@@ -432,8 +432,9 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
         throw new Error("Player already investigated");
       }
 
-      // Get target's party membership from roles
-      const targetRole = room.roles?.[targetId];
+      // Get target's party membership from player role
+      const targetPlayer = room.players[targetId];
+      const targetRole = targetPlayer?.role;
       if (!targetRole) {
         throw new Error("Target role not found - game may not be started");
       }
@@ -461,16 +462,18 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     [room, user]
   );
 
-  // Cleanup subscriptions
-  const cleanup = useCallback(() => {
-    subscriptions.forEach((unsub) => unsub());
-    setSubscriptions([]);
-  }, [subscriptions]);
-
   // Auto-subscribe if roomId is provided
-  if (roomId && !subscriptions.length) {
+  useEffect(() => {
+    if (!roomId) return;
+
+    // Subscribe to room updates
     subscribeToRoomUpdates(roomId);
-  }
+
+    // Cleanup on unmount or when roomId changes
+    return () => {
+      cleanup();
+    };
+  }, [roomId, subscribeToRoomUpdates, cleanup]);
 
   return {
     createNewRoom,
@@ -485,7 +488,6 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
     removePlayerFromRoom,
     transferAdmin,
     setStartingPlayer,
-    setPlayerReady,
     updatePlayerName,
     investigatePlayer,
     cleanup,

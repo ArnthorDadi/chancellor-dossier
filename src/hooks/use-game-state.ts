@@ -52,17 +52,17 @@ export const useGameState = (roomId?: string): UseGameStateReturn => {
 
   // Extract game state from room
   const room = roomHook.room;
-  const gameStatus = room?.metadata?.status || null;
+  const gameStatus = room?.status || null;
   const loading = roomHook.loading;
   const error = roomHook.error;
 
   // Current player information
   const currentPlayer =
-    room && user
+    room && user && room.players[user.uid]
       ? ({
           ...room.players[user.uid],
-          role: room.roles?.[user.uid],
-          party: (room.roles?.[user.uid] === "LIBERAL"
+          role: room.players[user.uid].role,
+          party: (room.players[user.uid].role === "LIBERAL"
             ? "LIBERAL"
             : "FASCIST") as Party,
           isAlive: true,
@@ -71,14 +71,20 @@ export const useGameState = (roomId?: string): UseGameStateReturn => {
 
   const currentPlayerRole = currentPlayer?.role;
   const currentPlayerParty = currentPlayer?.party;
-  const isPresident = room?.metadata?.currentPresidentId === user?.uid;
-  const isChancellor = room?.metadata?.currentChancellorId === user?.uid;
-  const isAdmin = room?.metadata?.adminId === user?.uid;
+  const isPresident = false; // TODO: Implement president tracking
+  const isChancellor = room?.currentChancellorId === user?.uid;
 
-  // Enacted policies
+  // Admin is the first player in the room
+  const isAdmin = (() => {
+    if (!room || !user) return false;
+    const playerIds = Object.keys(room.players || {});
+    return playerIds.length > 0 && playerIds[0] === user.uid;
+  })();
+
+  // Enacted policies removed
   const enactedPolicies = {
-    liberal: room?.metadata?.enactedLiberalPolicies || 0,
-    fascist: room?.metadata?.enactedFascistPolicies || 0,
+    liberal: 0,
+    fascist: 0,
   };
 
   // Update visible information when room or player data changes
@@ -93,10 +99,8 @@ export const useGameState = (roomId?: string): UseGameStateReturn => {
     const players = Object.values(room.players || {});
     const gamePlayers = players.map((player) => ({
       ...player,
-      role: room.roles?.[player.id],
-      party: (room.roles?.[player.id] === "LIBERAL"
-        ? "LIBERAL"
-        : "FASCIST") as Party,
+      role: player.role,
+      party: (player.role === "LIBERAL" ? "LIBERAL" : "FASCIST") as Party,
       isAlive: true,
     }));
 

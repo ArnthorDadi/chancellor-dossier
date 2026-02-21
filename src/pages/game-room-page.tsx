@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AuthHeader } from "@/components/auth-header";
 import { InvestigationTargetSelection } from "@/components/investigation-target-selection";
 import { InvestigationResult } from "@/components/investigation-result";
+import { PlayerList } from "@/components/player-list";
 
 export function GameRoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -137,9 +138,7 @@ export function GameRoomPage() {
             <div className="w-full max-w-2xl">
               <InvestigationTargetSelection
                 players={gameState.allPlayers}
-                currentPresidentId={
-                  gameState.room?.metadata?.currentPresidentId || ""
-                }
+                currentPresidentId=""
                 onInvestigate={roomHook.investigatePlayer}
                 loading={roomHook.loading}
                 alreadyInvestigated={alreadyInvestigated}
@@ -232,7 +231,10 @@ export function GameRoomPage() {
 
         {/* Main Content */}
         <main className="flex-1 container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto space-y-8">
+            {/* Player List */}
+            <PlayerList roomId={roomId} />
+
             <div className="border-4 border-noir-black bg-white p-8 shadow-2xl text-center dark:bg-card dark:border-white/20">
               <h2 className="font-special-elite text-2xl text-liberal-blue mb-4 dark:text-blue-300">
                 GAME IN PROGRESS

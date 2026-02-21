@@ -38,14 +38,8 @@ const mockPlayers: Record<string, Player> = {
 
 const mockRoom: Room = {
   id: "TEST123",
-  metadata: {
-    status: "LOBBY",
-    adminId: "user123",
-    createdAt: Date.now() - 15000,
-    enactedLiberalPolicies: 0,
-    enactedFascistPolicies: 0,
-    electionTracker: 0,
-  },
+  status: "LOBBY",
+  createdAt: Date.now() - 15000,
   players: mockPlayers,
 };
 
@@ -160,10 +154,7 @@ describe("PlayerList", () => {
   it("renders player list correctly in game", () => {
     const gameRoom: Room = {
       ...mockRoom,
-      metadata: {
-        ...mockRoom.metadata,
-        status: "ROLE_REVEAL",
-      },
+      status: "ROLE_REVEAL",
     };
 
     mockUseRoom.mockReturnValue({
@@ -280,10 +271,7 @@ describe("PlayerList", () => {
   it("hides admin badge for non-admin users", () => {
     const nonAdminRoom: Room = {
       ...mockRoom,
-      metadata: {
-        ...mockRoom.metadata,
-        adminId: "user456", // Different user is admin
-      },
+      adminId: "user456", // Different user is admin
     };
 
     mockUseRoom.mockReturnValue({

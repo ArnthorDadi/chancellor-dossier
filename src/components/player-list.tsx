@@ -70,7 +70,11 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
 
   const players = Object.values(room.players || {});
   const playerCount = players.length;
-  const isAdmin = user?.uid === room.metadata.adminId;
+
+  // Admin is the first player in the room
+  const playerIds = Object.keys(room.players || {});
+  const adminId = playerIds.length > 0 ? playerIds[0] : null;
+  const isAdmin = user?.uid === adminId;
 
   return (
     <div
@@ -110,7 +114,7 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
         ) : (
           players.map((player) => {
             const isCurrentUser = user?.uid === player.id;
-            const isAdminPlayer = room.metadata.adminId === player.id;
+            const isAdminPlayer = adminId === player.id;
 
             return (
               <div
@@ -169,28 +173,15 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
                 </div>
 
                 {/* Status */}
-                <div className="flex items-center space-x-2">
-                  {room.metadata.status === "LOBBY" && (
-                    <div
-                      className={cn(
-                        "border px-2 py-1 text-xs font-bold",
-                        player.isReady
-                          ? "bg-green-100 border-green-600 text-green-800 dark:bg-green-900/30 dark:border-green-500 dark:text-green-300"
-                          : "bg-yellow-100 border-yellow-600 text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-500 dark:text-yellow-300"
-                      )}
-                    >
-                      {player.isReady ? "READY" : "WAITING"}
-                    </div>
-                  )}
-
-                  {room.metadata.status !== "LOBBY" && (
+                {room.status !== "LOBBY" && (
+                  <div className="flex items-center space-x-2">
                     <div className="border-2 border-noir-black px-2 py-1 bg-vintage-cream dark:bg-card-foreground/5 dark:border-white/20">
                       <span className="text-xs font-bold dark:text-white">
                         IN GAME
                       </span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             );
           })
@@ -198,7 +189,7 @@ export function PlayerList({ roomId, className }: PlayerListProps) {
       </div>
 
       {/* Footer Info */}
-      {room.metadata.status === "LOBBY" && (
+      {room.status === "LOBBY" && (
         <div className="mt-6 pt-4 border-t-2 border-noir-black dark:border-white/20">
           <div className="text-center">
             <p className="text-xs text-noir-black/60 dark:text-white/60">

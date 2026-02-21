@@ -131,7 +131,7 @@ export const useAuth = (): UseAuthReturn => {
       if (user) {
         try {
           // Import functions dynamically to avoid circular dependencies
-          const { getRoom, removePlayer, updateRoomMetadata, deleteRoom } =
+          const { getRoom, removePlayer, updateRoom, deleteRoom } =
             await import("@/lib/realtime-database");
 
           // Find all rooms the user might be in by checking room IDs from localStorage or recent activity
@@ -144,21 +144,14 @@ export const useAuth = (): UseAuthReturn => {
             if (currentRoom?.players?.[user.uid]) {
               await removePlayer(currentRoomId, user.uid);
 
-              // If admin leaves and there are other players, transfer admin
-              if (currentRoom.metadata.adminId === user.uid) {
-                const remainingPlayers = Object.entries(
-                  currentRoom.players || {}
-                ).filter(([id]) => id !== user.uid);
+              // Check if this is the last player
+              const remainingPlayers = Object.entries(
+                currentRoom.players || {}
+              ).filter(([id]) => id !== user.uid);
 
-                if (remainingPlayers.length > 0) {
-                  const newAdminId = remainingPlayers[0][0];
-                  await updateRoomMetadata(currentRoomId, {
-                    adminId: newAdminId,
-                  });
-                } else {
-                  // Last player, delete the room
-                  await deleteRoom(currentRoomId);
-                }
+              if (remainingPlayers.length === 0) {
+                // Last player, delete the room
+                await deleteRoom(currentRoomId);
               }
             }
 
