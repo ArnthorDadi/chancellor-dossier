@@ -151,6 +151,9 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
           id: newRoomId,
           status: "LOBBY",
           createdAt: now,
+          lastActivityAt: now,
+          maxPlayers: 10,
+          autoDeleteAfterHours: 24,
           players: {
             [user.uid]: {
               id: user.uid,
@@ -160,7 +163,10 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
           },
         };
 
-        await createRoom(newRoomId, newRoom);
+        await createRoom(
+          newRoomId,
+          newRoom as unknown as Record<string, unknown>
+        );
 
         // Setup automatic disconnect handler for the creator
         await setupPlayerDisconnectHandler(newRoomId, user.uid);

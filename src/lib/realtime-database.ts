@@ -83,6 +83,8 @@ export const dbPaths = {
   roomInvestigations: (roomId: string) => `rooms/${roomId}/investigations`,
   player: (roomId: string, playerId: string) =>
     `rooms/${roomId}/players/${playerId}`,
+  role: (roomId: string, playerId: string) =>
+    `rooms/${roomId}/roles/${playerId}`,
   investigation: (roomId: string, targetId: string) =>
     `rooms/${roomId}/investigations/${targetId}`,
 };
@@ -172,7 +174,6 @@ export const getRoom = async (roomId: string) => {
   return { ...roomData, id: roomId };
 };
 
-
 export const getRoomPlayers = async (roomId: string) => {
   const playersRef = ref(database, dbPaths.roomPlayers(roomId));
   const snapshot = await get(playersRef);
@@ -210,9 +211,7 @@ export const deleteRoom = async (roomId: string): Promise<void> => {
 /**
  * Initialize database schema for a new room
  */
-export const initializeRoomSchema = async (
-  roomId: string
-): Promise<void> => {
+export const initializeRoomSchema = async (roomId: string): Promise<void> => {
   const roomSchema = {
     status: "LOBBY",
     createdAt: Date.now(),
@@ -257,6 +256,7 @@ export const resetRoom = async (roomId: string): Promise<void> => {
   updates["startedAt"] = null;
   updates["endedAt"] = null;
   updates["currentChancellorId"] = null;
+  updates["lastActivityAt"] = Date.now();
 
   // Clear investigations
   updates["investigations"] = null;
@@ -269,4 +269,117 @@ export const resetRoom = async (roomId: string): Promise<void> => {
 
   const roomRef = ref(database, dbPaths.room(roomId));
   await update(roomRef, updates);
+};
+
+/**
+ * Validate room settings before creation
+ */
+export interface RoomSettingsValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+export const validateRoomSettings = (
+  settings: Partial<{
+    roomName: string;
+    maxPlayers: number;
+    autoDeleteAfterHours: number;
+  }>
+): RoomSettingsValidationResult => {
+  const errors: string[] = [];
+
+  // Validate room name
+  if (settings.roomName !== undefined) {
+    if (typeof settings.roomName !== "string") {
+      errors.push("Room name must be a string");
+    } else if (settings.roomName.length > 30) {
+      errors.push("Room name must be 30 characters or less");
+    } else if (
+      settings.roomName.length > 0 &&
+      !/^[a-zA-Z0-9\s\-_]+$/.test(settings.roomName)
+    ) {
+      errors.push(
+        "Room name can only contain letters, numbers, spaces, hyphens, and underscores"
+      );
+    }
+  }
+
+  // Validate max players
+  if (settings.maxPlayers !== undefined) {
+    if (typeof settings.maxPlayers !== "number") {
+      errors.push("Max players must be a number");
+    } else if (settings.maxPlayers < 5 || settings.maxPlayers > 10) {
+      errors.push("Max players must be between 5 and 10");
+    }
+  }
+
+  // Validate auto-delete hours
+  if (settings.autoDeleteAfterHours !== undefined) {
+    if (typeof settings.autoDeleteAfterHours !== "number") {
+      errors.push("Auto-delete hours must be a number");
+    } else if (
+      settings.autoDeleteAfterHours < 1 ||
+      settings.autoDeleteAfterHours > 168
+    ) {
+      errors.push("Auto-delete hours must be between 1 and 168 (7 days)");
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+};
+
+/**
+ * Update last activity timestamp for a room
+ */
+export const updateRoomActivity = async (roomId: string): Promise<void> => {
+  const roomRef = ref(database, dbPaths.room(roomId));
+  await update(roomRef, { lastActivityAt: Date.now() });
+};
+
+/**
+ * Get all rooms for cleanup (admin function)
+ */
+export const getAllRooms = async (): Promise<Record<string, unknown>> => {
+  const roomsRef = ref(database, "rooms");
+  const snapshot = await get(roomsRef);
+  return snapshot.exists() ? snapshot.val() : {};
+};
+
+/**
+ * Delete rooms that have been inactive beyond the auto-delete threshold
+ * Returns number of deleted rooms
+ */
+export const cleanupInactiveRooms = async (
+  autoDeleteAfterHours: number = 24
+): Promise<number> => {
+  const rooms = await getAllRooms();
+  const now = Date.now();
+  const thresholdMs = autoDeleteAfterHours * 60 * 60 * 1000;
+  let deletedCount = 0;
+
+  for (const [roomId, roomData] of Object.entries(rooms)) {
+    const room = roomData as Record<string, unknown>;
+    const lastActivity =
+      (room.lastActivityAt as number | undefined) || (room.createdAt as number);
+    const lastPlayerActivity = room.players
+      ? Math.max(
+          ...Object.values(
+            room.players as Record<string, { joinedAt?: number }>
+          ).map((p) => p.joinedAt || 0)
+        )
+      : 0;
+
+    const roomLastActivity = Math.max(lastActivity, lastPlayerActivity);
+
+    if (now - roomLastActivity > thresholdMs) {
+      await deleteRoom(roomId);
+      deletedCount++;
+      console.log(`🗑️ Auto-deleted inactive room: ${roomId}`);
+    }
+  }
+
+  return deletedCount;
 };

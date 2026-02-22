@@ -12,6 +12,9 @@ import {
   updateRoom,
   initializeRoomSchema,
   validateRoomSchema,
+  validateRoomSettings,
+  updateRoomActivity,
+  cleanupInactiveRooms,
 } from "@/lib/realtime-database";
 
 // Mock Firebase
@@ -192,10 +195,7 @@ describe("Realtime Database", () => {
 
       await updateRoom("TEST1", roomData);
 
-      expect(update).toHaveBeenCalledWith(
-        { ref: "rooms/TEST1" },
-        roomData
-      );
+      expect(update).toHaveBeenCalledWith({ ref: "rooms/TEST1" }, roomData);
     });
   });
 
@@ -302,6 +302,174 @@ describe("Realtime Database", () => {
       const result = await validateRoomSchema("TEST1");
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe("validateRoomSettings", () => {
+    it("should return valid for empty settings", () => {
+      const result = validateRoomSettings({});
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("should return valid for valid room name", () => {
+      const result = validateRoomSettings({ roomName: "Test Room" });
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("should reject room name over 30 characters", () => {
+      const result = validateRoomSettings({
+        roomName: "a".repeat(31),
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "Room name must be 30 characters or less"
+      );
+    });
+
+    it("should reject invalid room name characters", () => {
+      const result = validateRoomSettings({ roomName: "Test@Room!" });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "Room name can only contain letters, numbers, spaces, hyphens, and underscores"
+      );
+    });
+
+    it("should reject max players below 5", () => {
+      const result = validateRoomSettings({ maxPlayers: 4 });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Max players must be between 5 and 10");
+    });
+
+    it("should reject max players above 10", () => {
+      const result = validateRoomSettings({ maxPlayers: 11 });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Max players must be between 5 and 10");
+    });
+
+    it("should accept valid max players", () => {
+      const result = validateRoomSettings({ maxPlayers: 8 });
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("should reject auto-delete hours below 1", () => {
+      const result = validateRoomSettings({ autoDeleteAfterHours: 0 });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "Auto-delete hours must be between 1 and 168 (7 days)"
+      );
+    });
+
+    it("should reject auto-delete hours above 168", () => {
+      const result = validateRoomSettings({ autoDeleteAfterHours: 169 });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain(
+        "Auto-delete hours must be between 1 and 168 (7 days)"
+      );
+    });
+
+    it("should accept valid auto-delete hours", () => {
+      const result = validateRoomSettings({ autoDeleteAfterHours: 24 });
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("should return multiple errors for invalid settings", () => {
+      const result = validateRoomSettings({
+        roomName: "a".repeat(31),
+        maxPlayers: 20,
+        autoDeleteAfterHours: -1,
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.length).toBe(3);
+    });
+  });
+
+  describe("updateRoomActivity", () => {
+    it("should update lastActivityAt timestamp", async () => {
+      const { update } = await import("firebase/database");
+
+      await updateRoomActivity("TEST1");
+
+      expect(update).toHaveBeenCalledWith(
+        { ref: "rooms/TEST1" },
+        { lastActivityAt: expect.any(Number) }
+      );
+    });
+  });
+
+  describe("cleanupInactiveRooms", () => {
+    it("should return 0 for empty rooms", async () => {
+      const { get } = await import("firebase/database");
+      vi.mocked(get).mockResolvedValue({ exists: () => false } as any);
+
+      const result = await cleanupInactiveRooms(24);
+      expect(result).toBe(0);
+    });
+
+    it("should not delete rooms within threshold", async () => {
+      const { get, remove } = await import("firebase/database");
+      const now = Date.now();
+      const recentRoom = {
+        TEST1: {
+          createdAt: now - 60 * 60 * 1000, // 1 hour ago
+          lastActivityAt: now - 60 * 60 * 1000,
+          players: {},
+        },
+      };
+      vi.mocked(get).mockResolvedValue({
+        exists: () => true,
+        val: () => recentRoom,
+      } as any);
+
+      const result = await cleanupInactiveRooms(24);
+      expect(result).toBe(0);
+      expect(remove).not.toHaveBeenCalled();
+    });
+
+    it("should delete rooms beyond threshold", async () => {
+      const { get, remove } = await import("firebase/database");
+      const now = Date.now();
+      const oldRoom = {
+        TEST1: {
+          createdAt: now - 48 * 60 * 60 * 1000, // 48 hours ago
+          lastActivityAt: now - 48 * 60 * 60 * 1000,
+          players: {},
+        },
+      };
+      vi.mocked(get).mockResolvedValue({
+        exists: () => true,
+        val: () => oldRoom,
+      } as any);
+      vi.mocked(remove).mockResolvedValue();
+
+      const result = await cleanupInactiveRooms(24);
+      expect(result).toBe(1);
+      expect(remove).toHaveBeenCalledWith({ ref: "rooms/TEST1" });
+    });
+
+    it("should delete rooms with no recent player activity", async () => {
+      const { get, remove } = await import("firebase/database");
+      const now = Date.now();
+      const oldRoom = {
+        TEST1: {
+          createdAt: now - 50 * 60 * 60 * 1000, // 50 hours ago
+          players: {
+            player1: { joinedAt: now - 50 * 60 * 60 * 1000 },
+          },
+        },
+      };
+      vi.mocked(get).mockResolvedValue({
+        exists: () => true,
+        val: () => oldRoom,
+      } as any);
+      vi.mocked(remove).mockResolvedValue();
+
+      const result = await cleanupInactiveRooms(24);
+      expect(result).toBe(1);
+      expect(remove).toHaveBeenCalledWith({ ref: "rooms/TEST1" });
     });
   });
 });

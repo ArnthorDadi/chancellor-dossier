@@ -226,7 +226,7 @@
         "Add room persistence settings (auto-delete after X hours of inactivity)",
         "Create unique shareable URLs with room code embedded"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F11-UX",

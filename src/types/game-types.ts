@@ -23,15 +23,22 @@ export interface GamePlayer extends Player {
   isAlive: boolean;
 }
 
-export interface Room {
+export interface RoomSettings {
+  roomName?: string;
+  maxPlayers: number; // 5-10, default 10
+  autoDeleteAfterHours: number; // default 24
+}
+
+export interface Room extends RoomSettings {
   id: string;
   status: GameStatus;
   createdAt: number;
+  lastActivityAt?: number;
   startedAt?: number;
   endedAt?: number;
   currentChancellorId?: string;
   players: Record<string, Player>;
-  investigations?: Record<string, InvestigationResultData>; // President-only access
+  investigations?: Record<string, InvestigationResultData>;
 }
 
 export interface InvestigationResultData {

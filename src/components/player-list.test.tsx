@@ -40,6 +40,9 @@ const mockRoom: Room = {
   id: "TEST123",
   status: "LOBBY",
   createdAt: Date.now() - 15000,
+  lastActivityAt: Date.now() - 15000,
+  maxPlayers: 10,
+  autoDeleteAfterHours: 24,
   players: mockPlayers,
 };
 

@@ -136,3 +136,22 @@
 - QRCode: 3 tests, RoomCodeDisplay: 7 tests, RoomSharingOptions: 5 tests
 - TypeScript compilation successful, all new tests passing
 - Updated PRD to mark F11-UI as completed
+
+2026-02-22: Completed Advanced Room Configuration (F11-FUNC)
+- Added room settings types to game-types.ts (RoomSettings interface with maxPlayers, autoDeleteAfterHours)
+- Added validateRoomSettings function for room creation validation:
+  * Validates room name (max 30 chars, alphanumeric + spaces/hyphens/underscores)
+  * Validates max players (5-10, default 10)
+  * Validates auto-delete hours (1-168, default 24)
+- Added room persistence settings to Room type (lastActivityAt, maxPlayers, autoDeleteAfterHours)
+- Added updateRoomActivity function to track room activity timestamps
+- Added cleanupInactiveRooms function to auto-delete rooms after inactivity threshold
+- Added dbPaths.role helper for roles path generation
+- Added lastActivityAt update to resetRoom function
+- Updated createNewRoom in use-room.ts to include default room settings
+- Added comprehensive unit tests (16 tests) for new functions:
+  * validateRoomSettings: 11 tests covering all validation scenarios
+  * updateRoomActivity: 1 test
+  * cleanupInactiveRooms: 4 tests
+- All new tests passing (160+ tests total), TypeScript compilation successful
+- Updated PRD to mark F11-FUNC as completed
