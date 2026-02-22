@@ -247,53 +247,73 @@ export function GameRoomPage() {
             {/* Player List */}
             <PlayerList roomId={roomId} />
 
-            <div className="border-4 border-noir-black bg-white p-8 shadow-2xl text-center dark:bg-card dark:border-white/20">
-              <h2 className="font-special-elite text-2xl text-liberal-blue mb-4 dark:text-blue-300">
-                GAME IN PROGRESS
+            <div className="border-4 border-noir-black bg-white p-6 shadow-2xl dark:bg-card dark:border-white/20">
+              <h2 className="font-special-elite text-xl text-liberal-blue mb-4 text-center dark:text-blue-300">
+                MISSION STATUS
               </h2>
-              <p className="font-courier text-sm text-noir-black/70 mb-6 dark:text-white/70">
-                Game status: {gameState.gameStatus}
-              </p>
-              <p className="font-courier text-sm text-noir-black/60 dark:text-white/60">
-                The game interface will be implemented here.
-              </p>
 
               {/* Game info display */}
-              <div className="mt-8 space-y-4">
-                <div className="border-2 border-noir-black p-4 bg-vintage-cream dark:bg-card dark:border-white/20">
-                  <h3 className="font-bold text-sm mb-2 dark:text-white">
-                    GAME INFO:
-                  </h3>
-                  <div className="font-courier text-xs space-y-1 dark:text-white/80">
-                    <p>Status: {gameState.gameStatus}</p>
-                    <p>Players: {gameState.allPlayers.length}</p>
-                    <p>
-                      Your Role: {gameState.currentPlayerRole || "Not assigned"}
+              <div className="space-y-4">
+                {/* Your Role Card */}
+                <div
+                  className={`
+                    border-2 border-noir-black p-4 text-center
+                    ${gameState.currentPlayerRole === "LIBERAL" ? "bg-gradient-to-b from-liberal-blue to-blue-900" : ""}
+                    ${gameState.currentPlayerRole === "FASCIST" ? "bg-gradient-to-b from-fascist-red to-red-900" : ""}
+                    ${gameState.currentPlayerRole === "HITLER" ? "bg-gradient-to-b from-amber-100 to-hitler-brown dark:from-hitler-brown dark:to-neutral-900" : ""}
+                    ${!gameState.currentPlayerRole ? "bg-vintage-cream dark:bg-card-foreground/5" : ""}
+                    ${gameState.currentPlayerRole === "HITLER" ? "border-yellow-600 ring-2 ring-yellow-600/50 dark:ring-yellow-600/30" : "dark:border-white/20"}
+                  `}
+                >
+                  <p className="font-courier text-xs mb-1 dark:text-white/80">
+                    YOUR IDENTITY
+                  </p>
+                  {gameState.currentPlayerRole === "HITLER" && (
+                    <p className="font-courier text-xs text-yellow-700 dark:text-yellow-400 mb-1">
+                      ★ THE FÜHRER ★
                     </p>
-                    <p>
-                      Your Party: {gameState.currentPlayerParty || "Unknown"}
-                    </p>
-                    {knownPlayers.length > 0 && gameState.currentPlayerRole && (
-                      <div className="mt-3 pt-2 border-t border-noir-black/20">
-                        <p className="font-bold">You know:</p>
-                        {knownPlayers.map(({ id, name, role }) => (
-                          <p key={id}>
-                            - {name}:{" "}
-                            <span
-                              className={
-                                role === "HITLER"
-                                  ? "text-hitler-brown font-bold"
-                                  : "text-fascist-red font-bold"
-                              }
-                            >
-                              {role}
-                            </span>
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  )}
+                  <p
+                    className={`font-special-elite text-lg font-bold ${gameState.currentPlayerRole === "HITLER" ? "text-hitler-brown dark:text-white" : "text-white dark:text-white"}`}
+                  >
+                    {gameState.currentPlayerRole || "CLASSIFIED"}
+                  </p>
+                  <p
+                    className={`font-courier text-xs mt-2 ${gameState.currentPlayerRole === "HITLER" ? "text-hitler-brown/80 dark:text-white/80" : "text-white/80 dark:text-white/80"}`}
+                  >
+                    Party: {gameState.currentPlayerParty || "UNKNOWN"}
+                  </p>
                 </div>
+
+                {/* You Know Section */}
+                {knownPlayers.length > 0 && gameState.currentPlayerRole && (
+                  <div className="border-2 border-noir-black p-4 bg-vintage-cream dark:bg-card-foreground/5 dark:border-white/20">
+                    <h3 className="font-special-elite text-sm mb-3 dark:text-white">
+                      CONFIDENTIAL KNOWLEDGE
+                    </h3>
+                    <div className="space-y-2">
+                      {knownPlayers.map(({ id, name, role }) => (
+                        <div
+                          key={id}
+                          className="flex items-center justify-between border-b border-noir-black/20 pb-2 last:border-0 dark:border-white/10"
+                        >
+                          <span className="font-courier text-xs dark:text-white/80">
+                            {name}
+                          </span>
+                          <span
+                            className={`
+                              font-special-elite text-sm font-bold
+                              ${role === "HITLER" ? "text-hitler-brown" : "text-fascist-red"}
+                              dark:${role === "HITLER" ? "text-hitler-brown" : "text-fascist-red"}
+                            `}
+                          >
+                            {role}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
