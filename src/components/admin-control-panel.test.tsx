@@ -26,6 +26,8 @@ const createMockRoom = (overrides: Partial<Room> = {}): Room => ({
   startedAt: undefined,
   endedAt: undefined,
   currentChancellorId: undefined,
+  maxPlayers: 10,
+  autoDeleteAfterHours: 24,
   ...overrides,
   players: {
     "admin-user-id": {
@@ -190,19 +192,9 @@ describe("AdminControlPanel", () => {
 
     it("should disable buttons when game is in progress", () => {
       const room = createMockRoom({
-        metadata: {
-          status: "ROLE_REVEAL",
-          adminId: "admin-user-id",
-          createdAt: Date.now(),
-          startedAt: Date.now(),
-          endedAt: undefined,
-          startingPlayerId: "admin-user-id",
-          currentPresidentId: "admin-user-id",
-          currentChancellorId: undefined,
-          enactedLiberalPolicies: 0,
-          enactedFascistPolicies: 0,
-          electionTracker: 0,
-        },
+        status: "ROLE_REVEAL",
+        startedAt: Date.now(),
+        currentChancellorId: undefined,
       });
       render(<AdminControlPanel room={room} />);
       expect(screen.getByText("GAME IN PROGRESS")).toBeInTheDocument();

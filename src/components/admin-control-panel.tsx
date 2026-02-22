@@ -20,14 +20,22 @@ export function AdminControlPanel({
   onStartGame,
 }: AdminControlPanelProps) {
   const { user } = useAuth();
-  const { removePlayerFromRoom, transferAdmin, startGame, setStartingPlayer } =
-    useRoom();
+  const {
+    removePlayerFromRoom,
+    transferAdmin,
+    startGame,
+    setStartingPlayer,
+    resetGame,
+  } = useRoom();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [actionType, setActionType] = useState<
-    "start" | "remove" | "transfer" | null
+    "start" | "remove" | "transfer" | "reset" | null
   >(null);
   const [targetPlayer, setTargetPlayer] = useState<Player | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [resetOption, setResetOption] = useState<
+    "ADMIN_REQUEST" | "GAME_OVER" | "CONSENSUS"
+  >("ADMIN_REQUEST");
 
   // Admin is the first player in the room
   const playerIds = Object.keys(room.players || {});
@@ -36,6 +44,8 @@ export function AdminControlPanel({
   const players = Object.values(room.players || {});
   const playerCount = players.length;
   const canStartGame = playerCount >= 5;
+  const isGameOver = room.status === "GAME_OVER";
+  const canReset = isAdmin || isGameOver;
 
   if (!isAdmin) {
     return (
@@ -88,23 +98,36 @@ export function AdminControlPanel({
     }
   };
 
+  const handleResetGameClick = () => {
+    if (isAdmin) {
+      setResetOption("ADMIN_REQUEST");
+    } else {
+      setResetOption("GAME_OVER");
+    }
+    setActionType("reset");
+    setShowConfirmDialog(true);
+  };
+
   const confirmAction = async () => {
-    if (!targetPlayer || !actionType || !user) return;
+    if (!targetPlayer && actionType !== "reset" && !user) return;
 
     setIsProcessing(true);
     try {
       switch (actionType) {
         case "remove":
-          await removePlayerFromRoom(targetPlayer.id);
-          onPlayerRemove?.(targetPlayer.id);
+          await removePlayerFromRoom(targetPlayer!.id);
+          onPlayerRemove?.(targetPlayer!.id);
           break;
         case "transfer":
-          await transferAdmin(targetPlayer.id);
-          onAdminTransfer?.(targetPlayer.id);
+          await transferAdmin(targetPlayer!.id);
+          onAdminTransfer?.(targetPlayer!.id);
           break;
         case "start":
           await startGame();
           onStartGame?.();
+          break;
+        case "reset":
+          await resetGame(resetOption);
           break;
       }
     } catch (error) {
@@ -169,12 +192,27 @@ export function AdminControlPanel({
               className="w-full bg-liberal-blue hover:bg-liberal-blue/90 text-white font-bold px-8 py-4 border-2 border-noir-black text-lg"
               disabled={room.status !== "LOBBY"}
             >
-              {room.status === "LOBBY"
-                ? "START GAME"
-                : "GAME IN PROGRESS"}
+              {room.status === "LOBBY" ? "START GAME" : "GAME IN PROGRESS"}
             </Button>
           )}
         </div>
+
+        {/* Reset Game Controls */}
+        {canReset && room.status !== "LOBBY" && (
+          <div className="text-center border-2 border-yellow-600 bg-yellow-50 p-4">
+            <p className="font-courier text-xs text-yellow-800 mb-3">
+              {isGameOver
+                ? "Game is over. Start a new game to play again."
+                : "Reset the game to play again with the same players."}
+            </p>
+            <Button
+              onClick={handleResetGameClick}
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-8 py-3 border-2 border-noir-black"
+            >
+              {isGameOver ? "START NEW GAME" : "RESET GAME"}
+            </Button>
+          </div>
+        )}
 
         {/* Player Management */}
         <div className="border-2 border-noir-black/20 p-4">
@@ -236,6 +274,46 @@ export function AdminControlPanel({
             ))}
           </div>
         </div>
+
+        {/* Reset History */}
+        {room.resetHistory && room.resetHistory.length > 0 && (
+          <div className="border-2 border-noir-black/20 p-4">
+            <h4 className="font-bold text-sm mb-3">GAME RESET HISTORY</h4>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {room.resetHistory.map((reset, index) => {
+                const resetByPlayer = room.players[reset.resetBy];
+                const playerName = resetByPlayer?.name || "Unknown";
+                const date = new Date(reset.resetAt);
+                const formattedDate = date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                return (
+                  <div
+                    key={index}
+                    className="font-courier text-xs border border-noir-black/10 p-2 bg-yellow-50"
+                  >
+                    <span className="font-bold">{playerName}</span> reset on{" "}
+                    {formattedDate}
+                    <span className="text-noir-black/60">
+                      {" "}
+                      (
+                      {reset.reason === "ADMIN_REQUEST"
+                        ? "Admin"
+                        : reset.reason === "GAME_OVER"
+                          ? "Game Over"
+                          : "Consensus"}
+                      )
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Confirmation Dialog */}
@@ -246,6 +324,7 @@ export function AdminControlPanel({
               {actionType === "start" && "CONFIRM GAME START"}
               {actionType === "remove" && "CONFIRM PLAYER REMOVAL"}
               {actionType === "transfer" && "CONFIRM ADMIN TRANSFER"}
+              {actionType === "reset" && "CONFIRM GAME RESET"}
             </h3>
 
             <div className="mb-6">
@@ -269,7 +348,35 @@ export function AdminControlPanel({
                   will no longer have admin control.
                 </p>
               )}
+              {actionType === "reset" && (
+                <div className="space-y-3">
+                  <p className="font-courier text-sm text-noir-black/80">
+                    Resetting the game will:
+                  </p>
+                  <ul className="font-courier text-xs text-noir-black/70 list-disc pl-4 space-y-1">
+                    <li>Clear all player roles and party assignments</li>
+                    <li>Reset enacted policies to zero</li>
+                    <li>Clear all investigation results</li>
+                    <li>Return the room to lobby status</li>
+                    <li>Allow all players to stay and play again</li>
+                  </ul>
+                  {isGameOver && (
+                    <p className="font-courier text-xs text-yellow-700 mt-2">
+                      This will start a new game with the same players.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
+
+            {isProcessing && (
+              <div className="mb-4 flex items-center justify-center space-x-2">
+                <div className="w-4 h-4 border-2 border-liberal-blue border-t-transparent rounded-full animate-spin" />
+                <span className="font-courier text-sm text-liberal-blue">
+                  RESETTING GAME...
+                </span>
+              </div>
+            )}
 
             <div className="flex space-x-3">
               <Button
@@ -287,7 +394,7 @@ export function AdminControlPanel({
                     ? "bg-liberal-blue hover:bg-liberal-blue/90 text-white"
                     : actionType === "remove"
                       ? "bg-fascist-red hover:bg-fascist-red/90 text-white"
-                      : "bg-yellow-400 hover:bg-yellow-400/90 text-black"
+                      : "bg-yellow-500 hover:bg-yellow-600 text-black"
                 }`}
                 disabled={isProcessing}
               >

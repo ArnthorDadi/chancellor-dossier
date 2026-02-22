@@ -21,6 +21,8 @@ describe("useRoom Hook", () => {
     id: "TEST1",
     status: "LOBBY" as const,
     createdAt: Date.now(),
+    maxPlayers: 10,
+    autoDeleteAfterHours: 24,
     players: {
       user123: {
         id: "user123",
@@ -50,7 +52,6 @@ describe("useRoom Hook", () => {
     mockRealtimeDb.updateRoom.mockResolvedValue();
     mockRealtimeDb.deleteRoom.mockResolvedValue();
     mockRealtimeDb.resetRoom.mockResolvedValue();
-    mockRealtimeDb.assignRoles.mockResolvedValue();
     mockRealtimeDb.updatePlayer.mockResolvedValue();
 
     mockGameLogic.canStartGame.mockReturnValue({ canStart: true, reason: "" });
@@ -196,7 +197,6 @@ describe("useRoom Hook", () => {
 
       expect(mockGameLogic.canStartGame).toHaveBeenCalled();
       expect(mockGameLogic.assignRoles).toHaveBeenCalled();
-      expect(mockRealtimeDb.assignRoles).toHaveBeenCalled();
       expect(mockRealtimeDb.updateRoom).toHaveBeenCalledWith(
         "TEST1",
         expect.objectContaining({
@@ -251,27 +251,6 @@ describe("useRoom Hook", () => {
 
       await expect(result.current.startGame()).rejects.toThrow(
         "Not enough players"
-      );
-    });
-  });
-
-  describe("setPlayerReady", () => {
-    it("should update player ready status", async () => {
-      mockRealtimeDb.subscribeToRoom.mockImplementation((roomId, callback) => {
-        if (roomId === "TEST1") {
-          callback({ val: () => mockRoom });
-        }
-        return vi.fn();
-      });
-
-      const { result } = renderHook(() => useRoom("TEST1"));
-
-      await result.current.setPlayerReady(true);
-
-      expect(mockRealtimeDb.updatePlayer).toHaveBeenCalledWith(
-        "TEST1",
-        "user123",
-        { isReady: true }
       );
     });
   });

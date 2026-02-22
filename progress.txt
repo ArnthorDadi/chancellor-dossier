@@ -155,3 +155,22 @@
   * cleanupInactiveRooms: 4 tests
 - All new tests passing (160+ tests total), TypeScript compilation successful
 - Updated PRD to mark F11-FUNC as completed
+
+2026-02-22: Completed Game Reset (F12-UI, F12-FUNC, F12-UX)
+- Added resetHistory and enactedPolicies to Room type in game-types.ts
+- Added roles property to Room type for secret role data
+- Updated resetRoom function to:
+  * Accept userId and reason parameters
+  * Clear roles node (secret role data)
+  * Reset enacted policies to zero
+  * Record reset action in reset history
+- Updated resetGame in use-room.ts to pass user ID and reason
+- Added Reset Game button to AdminControlPanel:
+  * Shows when room status is not LOBBY
+  * Different text for admin vs game over state
+  * Shows confirmation dialog with reset consequences
+  * Displays progress indicator during reset
+- Added reset history display in admin panel showing past resets
+- Fixed pre-existing TypeScript errors in test files
+- Build successful, TypeScript compilation passes
+- Updated PRD to mark all F12 features as completed

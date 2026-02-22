@@ -248,7 +248,11 @@ export const validateRoomSchema = async (roomId: string): Promise<boolean> => {
 /**
  * Reset room for new game
  */
-export const resetRoom = async (roomId: string): Promise<void> => {
+export const resetRoom = async (
+  roomId: string,
+  resetBy: string,
+  reason: "GAME_OVER" | "ADMIN_REQUEST" | "CONSENSUS" = "ADMIN_REQUEST"
+): Promise<void> => {
   const updates: Record<string, unknown> = {};
 
   // Update room fields
@@ -258,8 +262,14 @@ export const resetRoom = async (roomId: string): Promise<void> => {
   updates["currentChancellorId"] = null;
   updates["lastActivityAt"] = Date.now();
 
+  // Reset enacted policies
+  updates["enactedPolicies"] = { liberal: 0, fascist: 0 };
+
   // Clear investigations
   updates["investigations"] = null;
+
+  // Clear roles node (secret role data)
+  updates["roles"] = null;
 
   // Reset player game states (clear roles)
   const players = await getRoomPlayers(roomId);
@@ -267,8 +277,24 @@ export const resetRoom = async (roomId: string): Promise<void> => {
     updates[`players/${playerId}/role`] = null;
   });
 
+  // Record reset action in history
+  const resetRecord = {
+    resetBy,
+    resetAt: Date.now(),
+    reason,
+  };
+
   const roomRef = ref(database, dbPaths.room(roomId));
   await update(roomRef, updates);
+
+  // Add reset record to history (push to array)
+  const historyRef = ref(database, `${dbPaths.room(roomId)}/resetHistory`);
+  const snapshot = await get(historyRef);
+  const existingHistory: unknown[] = snapshot.exists()
+    ? Object.values(snapshot.val())
+    : [];
+  const newHistory = [...existingHistory, resetRecord];
+  await set(historyRef, newHistory);
 };
 
 /**

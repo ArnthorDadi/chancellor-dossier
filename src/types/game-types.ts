@@ -15,6 +15,7 @@ export interface Player {
   avatar?: string;
   joinedAt: number;
   role?: Role;
+  isReady?: boolean;
 }
 
 export interface GamePlayer extends Player {
@@ -39,6 +40,9 @@ export interface Room extends RoomSettings {
   currentChancellorId?: string;
   players: Record<string, Player>;
   investigations?: Record<string, InvestigationResultData>;
+  enactedPolicies?: { liberal: number; fascist: number };
+  resetHistory?: GameReset[];
+  roles?: Record<string, Role>;
 }
 
 export interface InvestigationResultData {

@@ -131,7 +131,7 @@ export const useAuth = (): UseAuthReturn => {
       if (user) {
         try {
           // Import functions dynamically to avoid circular dependencies
-          const { getRoom, removePlayer, updateRoom, deleteRoom } =
+          const { getRoom, removePlayer, deleteRoom } =
             await import("@/lib/realtime-database");
 
           // Find all rooms the user might be in by checking room IDs from localStorage or recent activity

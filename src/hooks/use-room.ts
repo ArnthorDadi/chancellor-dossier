@@ -319,7 +319,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
   // Reset the game
   const resetGame = useCallback(
     async (
-      _reason: "GAME_OVER" | "ADMIN_REQUEST" | "CONSENSUS" = "GAME_OVER"
+      reason: "GAME_OVER" | "ADMIN_REQUEST" | "CONSENSUS" = "ADMIN_REQUEST"
     ): Promise<void> => {
       if (!room || !user) {
         throw new Error("No room or user");
@@ -331,7 +331,7 @@ export const useRoom = (roomId?: string): UseRoomReturn => {
       }
 
       try {
-        await resetRoom(room.id);
+        await resetRoom(room.id, user.uid, reason);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to reset game";

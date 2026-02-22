@@ -23,19 +23,6 @@ vi.mock("react-router-dom", async () => {
 const mockUseAuth = vi.mocked(useAuth);
 const mockUseCreateRoom = vi.mocked(useCreateRoom);
 
-const createMockAuth = (overrides = {}) => ({
-  user: null,
-  loading: false,
-  error: null,
-  username: null,
-  signIn: vi.fn(),
-  signOut: vi.fn(),
-  signOutWithCleanup: vi.fn(),
-  getToken: vi.fn(),
-  updateUsername: vi.fn(),
-  ...overrides,
-});
-
 describe("Create Room Feature", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -86,6 +73,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });
@@ -121,6 +109,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });
@@ -148,6 +137,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });
@@ -216,6 +206,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });
@@ -254,6 +245,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });
@@ -306,6 +298,7 @@ describe("Create Room Feature", () => {
         username: "Test User",
         signIn: vi.fn(),
         signOut: vi.fn(),
+        signOutWithCleanup: vi.fn(),
         getToken: vi.fn(),
         updateUsername: vi.fn(),
       });

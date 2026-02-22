@@ -274,7 +274,20 @@ describe("PlayerList", () => {
   it("hides admin badge for non-admin users", () => {
     const nonAdminRoom: Room = {
       ...mockRoom,
-      adminId: "user456", // Different user is admin
+      players: {
+        user456: {
+          id: "user456",
+          name: "Non Admin User",
+          avatar: "N",
+          joinedAt: Date.now(),
+        },
+        user123: {
+          id: "user123",
+          name: "Admin User",
+          avatar: "A",
+          joinedAt: Date.now(),
+        },
+      },
     };
 
     mockUseRoom.mockReturnValue({

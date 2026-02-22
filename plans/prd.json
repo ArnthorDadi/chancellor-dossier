@@ -255,7 +255,7 @@
         "Show reset history for transparency",
         "Display different reset options based on user role"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F12-FUNC",
@@ -271,7 +271,7 @@
         "Trigger real-time update to all clients",
         "Record reset action in reset history"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F12-UX",
@@ -285,7 +285,7 @@
         "Show immediate UI updates after reset completes",
         "Return all players to lobby interface smoothly"
       ],
-      "passes": false
+      "passes": true
     }
   ]
 }
