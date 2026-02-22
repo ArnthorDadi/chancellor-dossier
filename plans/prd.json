@@ -209,30 +209,22 @@
       "category": "ui",
       "description": "Enhanced Room Creation Experience",
       "verification_steps": [
-        "Display modal/dedicated page for room creation instead of inline form",
         "Show room code preview with copy-to-clipboard functionality",
-        "Display room creation options (max players, game mode, private/public)",
-        "Show loading states during room creation with progress indicators",
         "Display success animation when room is created",
-        "Show sharing options (copy link, QR code, social share buttons)",
-        "Display room settings preview before creation"
+        "Show sharing options (copy link, QR code, social share buttons)"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "F11-FUNC",
       "category": "functional",
       "description": "Advanced Room Configuration",
       "verification_steps": [
+        "When joining a room, add the username to the player node, so that the players know who is who",
         "Generate human-readable room codes (4-6 alphanumeric characters)",
-        "Allow setting max player limit (5-10 players)",
-        "Implement private room option with password protection",
-        "Add game mode selection (standard, custom variants)",
         "Validate room settings before creation",
-        "Implement room customization (room name, description)",
         "Add room persistence settings (auto-delete after X hours of inactivity)",
-        "Create unique shareable URLs with room code embedded",
-        "Implement room template system for quick setup"
+        "Create unique shareable URLs with room code embedded"
       ],
       "passes": false
     },

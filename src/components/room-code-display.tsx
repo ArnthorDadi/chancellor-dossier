@@ -1,13 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { RoomSharingOptions } from "./room-sharing-options";
 
 interface RoomCodeDisplayProps {
   roomCode: string;
   className?: string;
+  showSharingOptions?: boolean;
+  isNewRoom?: boolean;
 }
 
-export function RoomCodeDisplay({ roomCode, className }: RoomCodeDisplayProps) {
+export function RoomCodeDisplay({
+  roomCode,
+  className,
+  showSharingOptions = true,
+  isNewRoom = false,
+}: RoomCodeDisplayProps) {
   const [copied, setCopied] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(isNewRoom);
+
+  useEffect(() => {
+    if (isNewRoom) {
+      const timer = setTimeout(() => {
+        setShowSuccessAnimation(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isNewRoom]);
 
   const copyToClipboard = async () => {
     try {
@@ -37,11 +55,26 @@ export function RoomCodeDisplay({ roomCode, className }: RoomCodeDisplayProps) {
 
   return (
     <div
-      className={`border-4 border-liberal-blue bg-white p-6 shadow-2xl dark:bg-card dark:border-blue-400/50 ${className}`}
+      className={`relative border-4 border-liberal-blue bg-white p-6 shadow-2xl dark:bg-card dark:border-blue-400/50 ${
+        showSuccessAnimation
+          ? "animate-in zoom-in-0 scale-100 duration-300 ring-4 ring-green-500/50"
+          : ""
+      } ${className}`}
     >
-      <div className="text-center">
+      {/* Success Animation Overlay */}
+      {showSuccessAnimation && (
+        <div className="absolute inset-0 bg-green-500/20 animate-pulse pointer-events-none rounded-lg" />
+      )}
+
+      <div className="text-center relative">
+        {showSuccessAnimation && (
+          <div className="absolute -top-2 -right-2 animate-bounce">
+            <span className="text-4xl">🎉</span>
+          </div>
+        )}
+
         <h2 className="font-special-elite text-lg text-liberal-blue mb-4 dark:text-blue-300">
-          ROOM CODE
+          {showSuccessAnimation ? "SAFE HOUSE ESTABLISHED!" : "ROOM CODE"}
         </h2>
 
         {/* Room Code */}
@@ -66,6 +99,13 @@ export function RoomCodeDisplay({ roomCode, className }: RoomCodeDisplayProps) {
         <p className="font-courier text-sm text-noir-black/60 mt-4 dark:text-white/60">
           Share this code with friends to let them join
         </p>
+
+        {/* Sharing Options */}
+        {showSharingOptions && (
+          <div className="mt-4">
+            <RoomSharingOptions roomCode={roomCode} />
+          </div>
+        )}
       </div>
     </div>
   );

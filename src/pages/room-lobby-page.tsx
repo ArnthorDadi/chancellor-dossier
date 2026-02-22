@@ -11,6 +11,16 @@ export function RoomLobbyPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { room, loading, error, leaveRoom, startGame } = useRoom(roomId);
+  const isNewRoom = (() => {
+    if (roomId) {
+      const wasJustCreated = sessionStorage.getItem(`room_${roomId}_created`);
+      if (wasJustCreated) {
+        sessionStorage.removeItem(`room_${roomId}_created`);
+        return true;
+      }
+    }
+    return false;
+  })();
 
   // Redirect to game page when game starts
   useEffect(() => {
@@ -104,7 +114,7 @@ export function RoomLobbyPage() {
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Room Code Display */}
-            <RoomCodeDisplay roomCode={roomId || ""} />
+            <RoomCodeDisplay roomCode={roomId || ""} isNewRoom={isNewRoom} />
 
             {/* Player List */}
             <PlayerList roomId={roomId} />

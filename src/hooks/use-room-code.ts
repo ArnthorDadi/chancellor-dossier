@@ -96,12 +96,14 @@ export const useCreateRoom = (): UseCreateRoomReturn => {
       // Create room with existing database schema
       const { initializeRoomSchema, addPlayerToRoom } =
         await import("@/lib/realtime-database");
-      await initializeRoomSchema(roomCode, user.uid);
+      await initializeRoomSchema(roomCode);
 
       // Add admin as the first player
+      const storedUsername =
+        localStorage.getItem(`username_${user.uid}`) || "Game Admin";
       const adminPlayerData = {
         id: user.uid,
-        name: "Game Admin",
+        name: storedUsername,
         isReady: false,
         joinedAt: new Date().toISOString(),
       };
@@ -109,6 +111,7 @@ export const useCreateRoom = (): UseCreateRoomReturn => {
       await addPlayerToRoom(roomCode, user.uid, adminPlayerData);
 
       // Navigate to the room lobby
+      sessionStorage.setItem(`room_${roomCode}_created`, "true");
       navigate(`/room/${roomCode}`);
 
       return { roomId: roomCode, roomCode };
@@ -182,9 +185,11 @@ export const useJoinRoom = (): UseJoinRoomReturn => {
         }
 
         // Add player to room
+        const storedUsername =
+          localStorage.getItem(`username_${user.uid}`) || "Anonymous Player";
         const playerData = {
           id: user.uid,
-          name: "Anonymous Player",
+          name: storedUsername,
           isReady: false,
           joinedAt: new Date().toISOString(),
         };
