@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 import { useGameState } from "@/hooks/use-game-state";
 import { useRoom } from "@/hooks/use-room";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { AuthHeader } from "@/components/auth-header";
 import { InvestigationTargetSelection } from "@/components/investigation-target-selection";
 import { InvestigationResult } from "@/components/investigation-result";
 import { PlayerList } from "@/components/player-list";
@@ -10,8 +11,22 @@ import { PlayerList } from "@/components/player-list";
 export function GameRoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const gameState = useGameState(roomId);
   const roomHook = useRoom(roomId);
+
+  const knownPlayers = useMemo(() => {
+    if (!gameState.visibleRoles || gameState.allPlayers.length === 0) {
+      return [];
+    }
+
+    return Object.entries(gameState.visibleRoles)
+      .filter(([playerId]) => playerId !== user?.uid)
+      .map(([playerId, role]) => {
+        const player = gameState.allPlayers.find((p) => p.id === playerId);
+        return { id: playerId, name: player?.name || "Unknown", role };
+      });
+  }, [gameState.visibleRoles, gameState.allPlayers, user]);
 
   if (gameState.loading) {
     return (
@@ -212,9 +227,6 @@ export function GameRoomPage() {
       </div>
 
       <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Auth Header with hamburger menu */}
-        <AuthHeader className="sticky top-0 z-50" />
-
         {/* Header */}
         <header className="border-b-8 border-noir-black pb-4 bg-white/50 backdrop-blur-sm dark:border-white/20 dark:bg-card/50">
           <div className="container mx-auto px-4 py-4">
@@ -261,6 +273,25 @@ export function GameRoomPage() {
                     <p>
                       Your Party: {gameState.currentPlayerParty || "Unknown"}
                     </p>
+                    {knownPlayers.length > 0 && gameState.currentPlayerRole && (
+                      <div className="mt-3 pt-2 border-t border-noir-black/20">
+                        <p className="font-bold">You know:</p>
+                        {knownPlayers.map(({ id, name, role }) => (
+                          <p key={id}>
+                            - {name}:{" "}
+                            <span
+                              className={
+                                role === "HITLER"
+                                  ? "text-hitler-brown font-bold"
+                                  : "text-fascist-red font-bold"
+                              }
+                            >
+                              {role}
+                            </span>
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
